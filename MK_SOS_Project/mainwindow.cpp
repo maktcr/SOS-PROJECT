@@ -33,14 +33,24 @@ void MainWindow::createGrid(int size) {
 
     gridSize = size;
 
+    //player moves will be kept track of using a 2d vector
+    //vect.resize(size);
+    //for (auto& row: vect) {
+    //    row.resize(size, 0);
+    //}
+    buttons.clear();
+    buttons.resize(size);
+
     //create a grid of buttons based on the user input
     for (int i = 0; i < size; ++i) {
+        buttons[i].resize(size);
         for (int j = 0; j < size; ++j) {
             QPushButton *button = new QPushButton();
             button->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
             gridLayout->addWidget(button, i, j);
             connect(button, &QPushButton::clicked, this, &MainWindow::onButtonClicked);
-            //
+            //stores the button in a vector for easy access later
+            buttons[i][j] = button;
         }
     }
     //When grid is created, display that it is now player ones turn.
@@ -48,7 +58,9 @@ void MainWindow::createGrid(int size) {
 }
 
 void MainWindow::clearGrid() {
-
+    //When clearGrid is called, create a new game environment.
+    //First, reset points and turns.
+    turn = 0;
 
     QLayoutItem *item;
     while ((item = gridLayout->takeAt(0)) != nullptr) {
@@ -79,6 +91,8 @@ void MainWindow::onButtonClicked() {
     QPushButton *button = qobject_cast<QPushButton*>(sender());
     QString buttonColor;
 
+
+
     //All if statements can be nested, but I chose to keep them seperate to improve the readability of the code.
 
     //First,check if a radio button is checked. If not, display a warning to the user.
@@ -104,6 +118,7 @@ void MainWindow::onButtonClicked() {
     }
 
     //display turn, then incriment turn to keep track of whose turn it is
+    //TODO::CHANGE TURN INCRIMENT LOGIC TO SATISFY THE RULES OF SOS GAME. NEED TO CHANGE COLOR LOGIC AS WELL
     turn++;
     ui->playerTurnCounterLabel->setText(QString::number(turn)); //QString::number() converts and int into a qstring
 
@@ -122,13 +137,25 @@ void MainWindow::onButtonClicked() {
             button->setText("O");
             button->setStyleSheet(buttonColor);
         }
-        //after space is filled, check for the winner
-        //checkWinner();
+        //after space is filled, check if the player earns a point
+        checkPoints();
     }
 
 }
 
 void MainWindow::checkPoints() {
+    //to check for points, we need to check each box against adjacent boxes
+    for (int i = 0; i < gridSize; i++) {
+        for (int j = 0; j < gridSize; j++) {
+            //
+        }
+    }
+
+
+
+
+    ui->playerTurnLabel->setText(buttons[0][1]->text());
+    //ui->playerTurnLabel->setText("Turn: It is Player Two's turn");
 
 }
 

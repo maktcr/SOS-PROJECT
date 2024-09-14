@@ -1,6 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QPushButton>
 #include <QGridLayout>
 #include <QMainWindow>
 
@@ -19,8 +20,6 @@ private slots:
     void onSetSizeButtonClicked();
     void onButtonClicked();
 
-    //void onRadioButtonToggled(bool checked);
-
 private:
     Ui::MainWindow *ui;
     QGridLayout *gridLayout;
@@ -33,5 +32,9 @@ private:
     void clearGrid();
     int gridSize;
     int turn = 0;
+    int playerOnePoints;
+    int playerTwoPoints;
+    QVector<QVector<QPushButton*>> buttons;
+
 };
 #endif // MAINWINDOW_H
