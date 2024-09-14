@@ -48,6 +48,8 @@ void MainWindow::createGrid(int size) {
 }
 
 void MainWindow::clearGrid() {
+
+
     QLayoutItem *item;
     while ((item = gridLayout->takeAt(0)) != nullptr) {
         QWidget *widget = item->widget();
@@ -123,6 +125,10 @@ void MainWindow::onButtonClicked() {
         //after space is filled, check for the winner
         //checkWinner();
     }
+
+}
+
+void MainWindow::checkPoints() {
 
 }
 

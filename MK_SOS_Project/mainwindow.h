@@ -29,7 +29,7 @@ private:
 
 
     void createGrid(int size);
-    void checkWinner();
+    void checkPoints();
     void clearGrid();
     int gridSize;
     int turn = 0;
