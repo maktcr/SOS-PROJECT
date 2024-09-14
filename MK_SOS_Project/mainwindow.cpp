@@ -40,6 +40,7 @@ void MainWindow::createGrid(int size) {
             button->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
             gridLayout->addWidget(button, i, j);
             connect(button, &QPushButton::clicked, this, &MainWindow::onButtonClicked);
+            //
         }
     }
     //When grid is created, display that it is now player ones turn.
