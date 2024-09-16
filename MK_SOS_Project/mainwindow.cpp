@@ -119,7 +119,6 @@ void MainWindow::onButtonClicked() {
 
     //display turn, then incriment turn to keep track of whose turn it is
     //TODO::CHANGE TURN INCRIMENT LOGIC TO SATISFY THE RULES OF SOS GAME. NEED TO CHANGE COLOR LOGIC AS WELL
-    turn++;
     ui->playerTurnCounterLabel->setText(QString::number(turn)); //QString::number() converts and int into a qstring
 
     //Make sure current grid space is empty before adding new text
@@ -138,25 +137,37 @@ void MainWindow::onButtonClicked() {
             button->setStyleSheet(buttonColor);
         }
         //after space is filled, check if the player earns a point
-        checkPoints();
+        checkSOS();
     }
 
 }
 
-void MainWindow::checkPoints() {
+void MainWindow::checkSOS() {
     //to check for points, we need to check each box against adjacent boxes
+
+    int createdSOS = 0;
+
+
     for (int i = 0; i < gridSize; i++) {
         for (int j = 0; j < gridSize; j++) {
-            //
+            if (checkCell()) {
+
+            }
         }
     }
 
+    //Player turn is only incrimented if no SOS was formed in the last turn
+    if (createdSOS)
 
 
 
     ui->playerTurnLabel->setText(buttons[0][1]->text());
     //ui->playerTurnLabel->setText("Turn: It is Player Two's turn");
 
+}
+
+bool MainWindow::checkCell() {
+    //impliment checkcell
 }
 
 

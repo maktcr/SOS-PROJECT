@@ -26,9 +26,9 @@ private:
     QVBoxLayout *mainLayout;
     QHBoxLayout *controlLayout;
 
-
+    bool checkCell();
     void createGrid(int size);
-    void checkPoints();
+    void checkSOS();
     void clearGrid();
     int gridSize;
     int turn = 0;
