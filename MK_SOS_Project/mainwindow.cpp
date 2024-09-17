@@ -117,8 +117,6 @@ void MainWindow::onButtonClicked() {
         buttonColor = "color: blue;";
     }
 
-    //display turn, then incriment turn to keep track of whose turn it is
-    //TODO::CHANGE TURN INCRIMENT LOGIC TO SATISFY THE RULES OF SOS GAME. NEED TO CHANGE COLOR LOGIC AS WELL
     ui->playerTurnCounterLabel->setText(QString::number(turn)); //QString::number() converts and int into a qstring
 
     //Make sure current grid space is empty before adding new text
@@ -139,8 +137,8 @@ void MainWindow::onButtonClicked() {
         //after space is filled, check if the player earns a point
         checkSOS();
     }
-
 }
+
 
 void MainWindow::checkSOS() {
     //to check for points, we need to check each box against adjacent boxes
@@ -148,26 +146,77 @@ void MainWindow::checkSOS() {
     int createdSOS = 0;
 
 
-    for (int i = 0; i < gridSize; i++) {
-        for (int j = 0; j < gridSize; j++) {
-            if (checkCell()) {
+    for (int i = 0; i < gridSize; ++i) {
+        for (int j = 0; j < gridSize; ++j) {
+            if (checkCell(i,j) == true) {
+                //This statement is reached when checkCell is called and
+                //an SOS is found. At this stage, use 'turn' to determine which
+                //player will recieve the point and be able to continue playing
+                if ((turn == 0) || (turn % 2 == 0)) {
+                    //it is player 1's turn
+                    playerOnePoints ++;
+                    createdSOS ++;
+                    QString newText1 = QString::number(playerOnePoints);
+                    ui->p1pointsLabel->setText(newText1);
 
+                }
+                else if ((turn == 1) || (turn % 2 != 0)){
+                    //its is player 2's turn
+                    playerTwoPoints ++;
+                    createdSOS ++;
+                    QString newText = QString::number(playerTwoPoints);
+                    ui->label2->setText(newText);
+                }
             }
         }
     }
 
+
+
     //Player turn is only incrimented if no SOS was formed in the last turn
-    if (createdSOS)
-
-
-
-    ui->playerTurnLabel->setText(buttons[0][1]->text());
-    //ui->playerTurnLabel->setText("Turn: It is Player Two's turn");
-
+    if (createdSOS == 0) {
+        turn ++;
+    }
 }
 
-bool MainWindow::checkCell() {
-    //impliment checkcell
+bool MainWindow::checkCell(int row, int col) {
+
+    QString sequence;
+
+    //check horizontal, vertical, and diagonal
+    //horizontal
+    if (col <= gridSize - 3) {
+        sequence = buttons[row][col]->text() + buttons[row][col + 1]->text() + buttons[row][col + 2]->text();
+        if (sequence == "SOS") {
+            return true;
+        }
+    }
+
+    //check verticle
+    if (row <= gridSize - 3) {
+        sequence = buttons[row][col]->text() + buttons[row + 1][col]->text() + buttons[row + 2][col]->text();
+        if (sequence == "SOS") {
+            return true;
+        }
+    }
+
+    //check diagonal down left
+    if ((row <= gridSize - 3) && (col >= 2)) {
+        sequence = buttons[row][col]->text() + buttons[row + 1][col - 1]->text() + buttons[row + 2][col - 2]->text();
+        if (sequence == "SOS") {
+            return true;
+        }
+    }
+
+    //check diagonal down right
+    if ((row <= gridSize - 3) && (col <= gridSize - 3)) {
+        sequence = buttons[row][col]->text() + buttons[row + 1][col + 1]->text() + buttons[row + 2][col + 2]->text();
+        if (sequence == "SOS") {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 

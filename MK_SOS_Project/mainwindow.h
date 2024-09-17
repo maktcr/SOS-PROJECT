@@ -26,14 +26,14 @@ private:
     QVBoxLayout *mainLayout;
     QHBoxLayout *controlLayout;
 
-    bool checkCell();
+    bool checkCell(int row, int col);
     void createGrid(int size);
     void checkSOS();
     void clearGrid();
     int gridSize;
     int turn = 0;
-    int playerOnePoints;
-    int playerTwoPoints;
+    double playerOnePoints;
+    double playerTwoPoints;
     QVector<QVector<QPushButton*>> buttons;
 
 };
