@@ -77,11 +77,11 @@ void MainWindow::onSetSizeButtonClicked() {
     bool ok;
     int newSize = ui->sizeLineEdit->text().toInt(&ok);
 
-    if (ok && newSize > 1 && newSize < 11) {
+    if (ok && newSize > 2 && newSize < 11) {
         createGrid(newSize);
     }
     else {
-        QMessageBox::warning(this, "Invalid Input","Enter a value greater than 1 and less than or equal to 10.");
+        QMessageBox::warning(this, "Invalid Input","Enter a value greater than 2 and less than or equal to 10.");
     }
 }
 
