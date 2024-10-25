@@ -3,7 +3,9 @@
 
 #include <QPushButton>
 #include <QGridLayout>
+#include <QLineEdit>
 #include <QMainWindow>
+#include "SOSgame.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -12,6 +14,7 @@ QT_END_NAMESPACE
 class MainWindow : public QMainWindow {
     Q_OBJECT
 
+    friend class SOSgame;
     friend class SOStest;
 
 public:
@@ -28,15 +31,18 @@ private:
     QVBoxLayout *mainLayout;
     QHBoxLayout *controlLayout;
 
-    bool checkCell(int row, int col);
+    SOSgame game;
+
     void createGrid(int size);
-    void checkSOS();
     void clearGrid();
-    int gridSize;
-    int turn = 0;
-    double playerOnePoints;
-    double playerTwoPoints;
-    QVector<QVector<QPushButton*>> buttons;
+    static void setP1Label();
+    static void setP2Label();
+    static int gridSize;
+
+
+    static int getGridSize() {
+        return gridSize;
+    }
 
 };
 #endif // MAINWINDOW_H

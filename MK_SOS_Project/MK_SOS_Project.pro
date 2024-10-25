@@ -15,6 +15,7 @@ SOURCES += \
     mainwindow.cpp
 
 HEADERS += \
+    SOSgame.h \
     mainwindow.h
 
 FORMS += \
