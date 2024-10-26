@@ -44,6 +44,7 @@ void MainWindow::createGrid(int size, SOSgame *game) {
 
     game->buttons.clear();
     game->buttons.resize(size);
+    game->foundSOS.clear();
 
 
     //create a grid of buttons based on the user input
@@ -60,13 +61,14 @@ void MainWindow::createGrid(int size, SOSgame *game) {
     }
     //When grid is created, display that it is now player ones turn.
     ui->playerTurnLabel->setText("Turn: It is Player One's turn");
+    ui->playerTurnCounterLabel->setText(QString::number(game->turn)); //QString::number() converts and int into a qstring
 }
 
 void MainWindow::clearGrid() {
     //When clearGrid is called, create a new game environment.
     //First, reset points and turns.
     simpleGame->turn = 0;
-    generalGame ->turn = 0;
+    generalGame->turn = 0;
 
     QLayoutItem *item;
     while ((item = gridLayout->takeAt(0)) != nullptr) {
@@ -109,10 +111,17 @@ void MainWindow::onButtonClicked() {
     //Fill cell function
     if (currentGameMode == true) {
         fillCell(simpleGame);
+        cells++;
     }
     else if (currentGameMode == false) {
         fillCell(generalGame);
+        cells++;
     }
+
+    if (cells == gridSize) {
+        gameOver(generalGame);
+    }
+
 }
 
 void MainWindow::fillCell(SOSgame *game) {
@@ -124,18 +133,12 @@ void MainWindow::fillCell(SOSgame *game) {
     //Might nest later if i dont like how it looks//
     if (game->turn % 2 == 0) {
         //it is player 1's turn
-        //Text is reversed due to the nature of how this function
-        //executes when one of the game board buttons are pressed.
-        ui->playerTurnLabel->setText("Turn: It is Player Two's turn");
         buttonColor = "color: red;";
     }
     else if (game->turn % 2 != 0){
         //its is player 2's turn
-        ui->playerTurnLabel->setText("Turn: It is Player One's turn");
         buttonColor = "color: blue;";
     }
-
-    ui->playerTurnCounterLabel->setText(QString::number(game->turn)); //QString::number() converts and int into a qstring
 
     //Make sure current grid space is empty before adding new text
     if (button && button->text().isEmpty()) {
@@ -153,8 +156,22 @@ void MainWindow::fillCell(SOSgame *game) {
             button->setStyleSheet(buttonColor);
         }
         //after space is filled, check if the player earns a point
-        game->checkSOS(gridSize);
+        game->checkSOS(gridSize, currentGameMode);
     }
+
+    if (game->turn % 2 == 0) {
+        ui->playerTurnLabel->setText("Turn: It is Player One's turn");
+    }
+    else if (game->turn % 2 != 0){
+        ui->playerTurnLabel->setText("Turn: It is Player Two's turn");
+    }
+
+    ui->playerTurnCounterLabel->setText(QString::number(game->turn)); //QString::number() converts and int into a qstring
+
+}
+
+void MainWindow::gameOver(SOSgame *game) {
+
 }
 
 

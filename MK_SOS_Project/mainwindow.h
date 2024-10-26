@@ -42,5 +42,6 @@ private:
     void fillCell(SOSgame *game);
     void clearGrid();
     int gridSize;
+    int cells;
 };
 #endif // MAINWINDOW_H
