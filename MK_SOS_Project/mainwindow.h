@@ -1,11 +1,11 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include "SOSgame.h"
 #include <QPushButton>
 #include <QGridLayout>
 #include <QLineEdit>
 #include <QMainWindow>
-#include "SOSgame.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -18,31 +18,29 @@ class MainWindow : public QMainWindow {
     friend class SOStest;
 
 public:
-    MainWindow(QWidget *parent = nullptr);
+    explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+
+    Ui::MainWindow *ui;
+
+    bool currentGameMode; //true for simple, false for general
 
 private slots:
     void onSetSizeButtonClicked();
     void onButtonClicked();
 
 private:
-    Ui::MainWindow *ui;
+
+    SOSgame *simpleGame;
+    SOSgame *generalGame;
+
     QGridLayout *gridLayout;
     QVBoxLayout *mainLayout;
     QHBoxLayout *controlLayout;
 
-    SOSgame game;
-
-    void createGrid(int size);
+    void createGrid(int size, SOSgame *game);
+    void fillCell(SOSgame *game);
     void clearGrid();
-    static void setP1Label();
-    static void setP2Label();
-    static int gridSize;
-
-
-    static int getGridSize() {
-        return gridSize;
-    }
-
+    int gridSize;
 };
 #endif // MAINWINDOW_H

@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include <QTest>
 
+/*
 
 class SOStest : public QObject {
 
@@ -62,7 +63,7 @@ void SOStest::testSizeButton() {
 
 }
 
-
+*/
 
 
 

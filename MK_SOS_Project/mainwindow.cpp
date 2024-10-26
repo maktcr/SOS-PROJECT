@@ -19,6 +19,10 @@ MainWindow::MainWindow(QWidget *parent)
     mainLayout->addWidget(containerWidget);
     ui->centralWidget->setLayout(mainLayout);
 
+    //might work might not
+    simpleGame = new SOSgame();
+    generalGame = new SOSgame();
+
     connect(ui->setSizeButton, &QPushButton::clicked, this, &MainWindow::onSetSizeButtonClicked);
 }
 
@@ -27,7 +31,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::createGrid(int size) {
+void MainWindow::createGrid(int size, SOSgame *game) {
     clearGrid();
 
     gridSize = size;
@@ -37,20 +41,21 @@ void MainWindow::createGrid(int size) {
     //for (auto& row: vect) {
     //    row.resize(size, 0);
     //}
-    game.buttons.clear();
-    game.buttons.resize(size);
+
+    game->buttons.clear();
+    game->buttons.resize(size);
 
 
     //create a grid of buttons based on the user input
     for (int i = 0; i < size; ++i) {
-        game.buttons[i].resize(size);
+        game->buttons[i].resize(size);
         for (int j = 0; j < size; ++j) {
             QPushButton *button = new QPushButton();
             button->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
             gridLayout->addWidget(button, i, j);
             connect(button, &QPushButton::clicked, this, &MainWindow::onButtonClicked);
             //stores the button in a vector for easy access later
-            game.buttons[i][j] = button;
+            game->buttons[i][j] = button;
         }
     }
     //When grid is created, display that it is now player ones turn.
@@ -60,7 +65,8 @@ void MainWindow::createGrid(int size) {
 void MainWindow::clearGrid() {
     //When clearGrid is called, create a new game environment.
     //First, reset points and turns.
-    game.turn = 0;
+    simpleGame->turn = 0;
+    generalGame ->turn = 0;
 
     QLayoutItem *item;
     while ((item = gridLayout->takeAt(0)) != nullptr) {
@@ -78,7 +84,14 @@ void MainWindow::onSetSizeButtonClicked() { //aka, new game button
     int newSize = ui->sizeLineEdit->text().toInt(&ok);
 
     if (ok && newSize > 2 && newSize < 11) {
-        createGrid(newSize);
+        if (ui->simpleGame->isChecked()) {
+            createGrid(newSize, simpleGame);
+            currentGameMode = true;
+        }
+        else if (ui->generalGame->isChecked()) {
+            createGrid(newSize, generalGame);
+            currentGameMode = false;
+        }
     }
     else {
         QMessageBox::warning(this, "Invalid Input","Enter a value greater than 2 and less than or equal to 10.");
@@ -87,37 +100,42 @@ void MainWindow::onSetSizeButtonClicked() { //aka, new game button
 
 void MainWindow::onButtonClicked() {
 
-
-    QPushButton *button = qobject_cast<QPushButton*>(sender());
-    QString buttonColor;
-
-
-
-    //All if statements can be nested, but I chose to keep them seperate to improve the readability of the code.
-
     //First,check if a radio button is checked. If not, display a warning to the user.
     if ((ui->radioButton->isChecked() == false) && (ui->radioButton_2->isChecked() == false)) {
         QMessageBox::warning(this, "Invalid Input","Please select a radio button to enter an 'S' or an 'O'");
         return;
     }
 
+    //Fill cell function
+    if (currentGameMode == true) {
+        fillCell(simpleGame);
+    }
+    else if (currentGameMode == false) {
+        fillCell(generalGame);
+    }
+}
+
+void MainWindow::fillCell(SOSgame *game) {
+
+    QPushButton *button = qobject_cast<QPushButton*>(sender());
+    QString buttonColor;
 
     //Set color of the letter before-hand to avoid nesting another if statement.
     //Might nest later if i dont like how it looks//
-    if (game.turn % 2 == 0) {
+    if (game->turn % 2 == 0) {
         //it is player 1's turn
         //Text is reversed due to the nature of how this function
         //executes when one of the game board buttons are pressed.
         ui->playerTurnLabel->setText("Turn: It is Player Two's turn");
         buttonColor = "color: red;";
     }
-    else if (game.turn % 2 != 0){
+    else if (game->turn % 2 != 0){
         //its is player 2's turn
         ui->playerTurnLabel->setText("Turn: It is Player One's turn");
         buttonColor = "color: blue;";
     }
 
-    ui->playerTurnCounterLabel->setText(QString::number(game.turn)); //QString::number() converts and int into a qstring
+    ui->playerTurnCounterLabel->setText(QString::number(game->turn)); //QString::number() converts and int into a qstring
 
     //Make sure current grid space is empty before adding new text
     if (button && button->text().isEmpty()) {
@@ -135,94 +153,8 @@ void MainWindow::onButtonClicked() {
             button->setStyleSheet(buttonColor);
         }
         //after space is filled, check if the player earns a point
-        game.checkSOS();
+        game->checkSOS(gridSize);
     }
-}
-
-void MainWindow::setP1Label() {
-    //gets P1 (player one points) from SOSgame class and updates the label
-    ui->p1pointsLabel->setText(QString::number(SOSgame::p1));
-}
-
-void MainWindow::setP2Label() {
-    ui->label2->setText(QString::number(SOSgame::p2));
-}
-
-
-void SOSgame::checkSOS() {
-    //to check for points, we need to check each box against adjacent boxes
-
-    int createdSOS = 0;
-    int size = MainWindow::getGridSize();
-
-
-    for (int i = 0; i < size; ++i) {
-        for (int j = 0; j < size; ++j) {
-            if (checkCell(i,j) == true) {
-                //This statement is reached when checkCell is called and
-                //an SOS is found. At this stage, use 'turn' to determine which
-                //player will recieve the point and be able to continue playing
-                if (turn % 2 == 0) {
-                    //it is player 1's turn
-                    p1 ++;
-                    createdSOS ++;
-                    //mainwindow function to change p1pointsLabel
-                    MainWindow::setP1Label();
-                }
-                else if (turn % 2 != 0){
-                    //its is player 2's turn
-                    p2 ++;
-                    createdSOS ++;
-                    MainWindow::setP2Label();
-                }
-            }
-        }
-    }
-
-    //Player turn is only incrimented if no SOS was formed in the last turn
-    if (createdSOS == 0) {
-        turn ++;
-    }
-}
-
-bool MainWindow::checkCell(int row, int col) {
-
-    QString sequence;
-
-    //check horizontal, vertical, and diagonal
-    //horizontal
-    if (col <= gridSize - 3) {
-        sequence = buttons[row][col]->text() + buttons[row][col + 1]->text() + buttons[row][col + 2]->text();
-        if (sequence == "SOS") {
-            return true;
-        }
-    }
-
-    //check verticle
-    if (row <= gridSize - 3) {
-        sequence = buttons[row][col]->text() + buttons[row + 1][col]->text() + buttons[row + 2][col]->text();
-        if (sequence == "SOS") {
-            return true;
-        }
-    }
-
-    //check diagonal down left
-    if ((row <= gridSize - 3) && (col >= 2)) {
-        sequence = buttons[row][col]->text() + buttons[row + 1][col - 1]->text() + buttons[row + 2][col - 2]->text();
-        if (sequence == "SOS") {
-            return true;
-        }
-    }
-
-    //check diagonal down right
-    if ((row <= gridSize - 3) && (col <= gridSize - 3)) {
-        sequence = buttons[row][col]->text() + buttons[row + 1][col + 1]->text() + buttons[row + 2][col + 2]->text();
-        if (sequence == "SOS") {
-            return true;
-        }
-    }
-
-    return false;
 }
 
 

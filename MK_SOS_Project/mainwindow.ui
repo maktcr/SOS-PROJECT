@@ -137,7 +137,7 @@
     <property name="title">
      <string>Game Mode</string>
     </property>
-    <widget class="QRadioButton" name="radioButton_4">
+    <widget class="QRadioButton" name="generalGame">
      <property name="geometry">
       <rect>
        <x>0</x>
@@ -150,7 +150,7 @@
       <string>General Game</string>
      </property>
     </widget>
-    <widget class="QRadioButton" name="radioButton_3">
+    <widget class="QRadioButton" name="simpleGame">
      <property name="geometry">
       <rect>
        <x>0</x>
