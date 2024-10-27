@@ -19,23 +19,25 @@ struct SOSpos {
 };
 
 
-
-
-
 class SOSgame : public QMainWindow {
+    Q_OBJECT
     friend class MainWindow;
 public:
-
+    explicit SOSgame(QWidget *parent = nullptr);
 
 private:
 
-    bool checkCell(int row, int col, int size);
-    void checkSOS(int size, bool gameMode);
+    bool checkCell(int row, int col);
+    void checkSOS();
+    bool checkGameOver(bool mode);
 
     int turn = 0;
 
     int p1;  //stores player 1 points
     int p2;  //stores player 2 points
+    int gridSize;
+    int occupiedCells;
+
     std::set<SOSpos> foundSOS; //track the sos's found
     QVector<QVector<QPushButton*>> buttons;
 };

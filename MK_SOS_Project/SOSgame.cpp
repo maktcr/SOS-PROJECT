@@ -1,14 +1,15 @@
 #include "SOSgame.h"
+#include <QMessageBox>
 
-void SOSgame::checkSOS(int size, bool gameMode) {
+void SOSgame::checkSOS() {
     //to check for points, we need to check each box against adjacent boxes
 
     int createdSOS = 0;
 
 
-    for (int i = 0; i < size; ++i) {
-        for (int j = 0; j < size; ++j) {
-            if (checkCell(i,j, size) == true) {
+    for (int i = 0; i < gridSize; ++i) {
+        for (int j = 0; j < gridSize; ++j) {
+            if (checkCell(i,j) == true) {
                 //This statement is reached when checkCell is called and
                 //an SOS is found. At this stage, use 'turn' to determine which
                 //player will recieve the point and be able to continue playing
@@ -26,11 +27,6 @@ void SOSgame::checkSOS(int size, bool gameMode) {
             }
         }
     }
-    // if this is a simple game, the game is ended after one SOS is found, this logic is included here.
-
-
-
-
 
     //Player turn is only incrimented if no SOS was formed in the last turn
     if (createdSOS == 0) {
@@ -38,7 +34,7 @@ void SOSgame::checkSOS(int size, bool gameMode) {
     }
 }
 
-bool SOSgame::checkCell(int row, int col, int gridSize) {
+bool SOSgame::checkCell(int row, int col) {
 
     QString sequence;
 
@@ -51,6 +47,7 @@ bool SOSgame::checkCell(int row, int col, int gridSize) {
             if (foundSOS.find(pos) == foundSOS.end()) {
                 foundSOS.insert(pos);
                 return true;
+
             }
         }
     }
@@ -92,4 +89,37 @@ bool SOSgame::checkCell(int row, int col, int gridSize) {
     }
 
     return false;
+}
+
+bool SOSgame::checkGameOver(bool mode) {
+
+    if (mode == true && (p1 | p2 > 0)) {
+        //in a simple game, the game is over once a single SOS is found, if its not a simple game, continue
+        if (p1 == 1) {
+            QMessageBox::warning(this, "Player One is the winner!","You may continue playing this game to the end, or start a new one");
+        }
+        if (p2 == 1) {
+            QMessageBox::warning(this, "Player Two is the winner!","You may continue playing this game to the end, or start a new one");
+        }
+        return true;
+    }
+    //in a general game, the game is over once the whole board is full.
+    else if (mode == false && (occupiedCells >= gridSize)) {
+
+        if (p1 > p2) {
+            QMessageBox::warning(this, "Player One is the winner!","Please use the new game button to start a new game.");
+        }
+        else if (p2 > p1) {
+            QMessageBox::warning(this, "Player Two is the winner!","Please use the new game button to start a new game.");
+        }
+        else {
+            QMessageBox::warning(this, "Game has ended in a Draw!","Please use the new game button to start a new game.");
+        }
+        return true;
+    }
+    else {
+        return false;
+    }
+
+
 }

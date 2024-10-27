@@ -34,7 +34,7 @@ MainWindow::~MainWindow()
 void MainWindow::createGrid(int size, SOSgame *game) {
     clearGrid();
 
-    gridSize = size;
+    game->gridSize = size;
 
     //player moves will be kept track of using a 2d vector
     //vect.resize(size);
@@ -111,16 +111,12 @@ void MainWindow::onButtonClicked() {
     //Fill cell function
     if (currentGameMode == true) {
         fillCell(simpleGame);
-        cells++;
     }
     else if (currentGameMode == false) {
         fillCell(generalGame);
-        cells++;
+
     }
 
-    if (cells == gridSize) {
-        gameOver(generalGame);
-    }
 
 }
 
@@ -148,6 +144,7 @@ void MainWindow::fillCell(SOSgame *game) {
         if (ui->radioButton->isChecked() == true) {
             button->setText("S");
             button->setStyleSheet(buttonColor);
+            game->occupiedCells++;
         }
         //Else if statement executes if second radio button is checked,
         //inserting an O into the space.
@@ -155,8 +152,15 @@ void MainWindow::fillCell(SOSgame *game) {
             button->setText("O");
             button->setStyleSheet(buttonColor);
         }
+
         //after space is filled, check if the player earns a point
-        game->checkSOS(gridSize, currentGameMode);
+        game->checkSOS();
+
+        //after checkSOS is done, check if game is over
+        //this function is where proper code goes to die
+        if (game->checkGameOver(currentGameMode)) {
+            clearGrid();
+        }
     }
 
     if (game->turn % 2 == 0) {
@@ -169,9 +173,3 @@ void MainWindow::fillCell(SOSgame *game) {
     ui->playerTurnCounterLabel->setText(QString::number(game->turn)); //QString::number() converts and int into a qstring
 
 }
-
-void MainWindow::gameOver(SOSgame *game) {
-
-}
-
-

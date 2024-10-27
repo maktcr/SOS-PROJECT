@@ -41,7 +41,5 @@ private:
     void createGrid(int size, SOSgame *game);
     void fillCell(SOSgame *game);
     void clearGrid();
-    int gridSize;
-    int cells;
 };
 #endif // MAINWINDOW_H
