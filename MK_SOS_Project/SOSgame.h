@@ -5,6 +5,7 @@
 #include <QGridLayout>
 #include <QLineEdit>
 #include <QMainWindow>
+#include <QLabel>
 #include <set>
 #include <tuple>
 
@@ -20,16 +21,17 @@ struct SOSpos {
 
 
 class SOSgame : public QMainWindow {
-    Q_OBJECT
+    //Q_OBJECT
     friend class MainWindow;
 public:
-    explicit SOSgame(QWidget *parent = nullptr);
+    //explicit SOSgame(QWidget *parent = nullptr);
 
 private:
 
     bool checkCell(int row, int col);
     void checkSOS();
     bool checkGameOver(bool mode);
+    void drawLine(QLabel *label, const QString &direction);
 
     int turn = 0;
 
@@ -40,6 +42,7 @@ private:
 
     std::set<SOSpos> foundSOS; //track the sos's found
     QVector<QVector<QPushButton*>> buttons;
+    QVector<QVector<QLabel*>> labels;
 };
 
 

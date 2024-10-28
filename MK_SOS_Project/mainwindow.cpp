@@ -35,21 +35,22 @@ void MainWindow::createGrid(int size, SOSgame *game) {
     clearGrid();
 
     game->gridSize = size;
-
-    //player moves will be kept track of using a 2d vector
-    //vect.resize(size);
-    //for (auto& row: vect) {
-    //    row.resize(size, 0);
-    //}
-
     game->buttons.clear();
     game->buttons.resize(size);
+    game->labels.clear();
+    game->labels.resize(size);;
     game->foundSOS.clear();
+    game->occupiedCells = 0;
+    game->p1 = 0;
+    game->p2 = 0;
 
 
     //create a grid of buttons based on the user input
     for (int i = 0; i < size; ++i) {
+
         game->buttons[i].resize(size);
+        game->labels[i].resize(size);
+
         for (int j = 0; j < size; ++j) {
             QPushButton *button = new QPushButton();
             button->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -57,6 +58,13 @@ void MainWindow::createGrid(int size, SOSgame *game) {
             connect(button, &QPushButton::clicked, this, &MainWindow::onButtonClicked);
             //stores the button in a vector for easy access later
             game->buttons[i][j] = button;
+
+            //create a transparent label over the button, this is used for putting the line through the SOS when it is found
+            QLabel *label = new QLabel(this);
+            label->setAttribute(Qt::WA_TransparentForMouseEvents);
+            label->setStyleSheet("background: transparent;");
+            gridLayout->addWidget(label, i, j);
+            game->labels[i][j] = label;
         }
     }
     //When grid is created, display that it is now player ones turn.
@@ -151,6 +159,7 @@ void MainWindow::fillCell(SOSgame *game) {
         else if (ui->radioButton_2->isChecked() == true) {
             button->setText("O");
             button->setStyleSheet(buttonColor);
+            game->occupiedCells++;
         }
 
         //after space is filled, check if the player earns a point
