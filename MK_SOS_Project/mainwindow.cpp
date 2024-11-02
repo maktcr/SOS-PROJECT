@@ -19,9 +19,7 @@ MainWindow::MainWindow(QWidget *parent)
     mainLayout->addWidget(containerWidget);
     ui->centralWidget->setLayout(mainLayout);
 
-    //might work might not
-    simpleGame = new SOSgame();
-    generalGame = new SOSgame();
+    Game = new SOSgame();
 
     connect(ui->setSizeButton, &QPushButton::clicked, this, &MainWindow::onSetSizeButtonClicked);
 }
@@ -31,25 +29,19 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::createGrid(int size, SOSgame *game) {
+void MainWindow::createGrid(int size) {
+
     clearGrid();
 
-    game->gridSize = size;
-    game->buttons.clear();
-    game->buttons.resize(size);
-    game->labels.clear();
-    game->labels.resize(size);;
-    game->foundSOS.clear();
-    game->occupiedCells = 0;
-    game->p1 = 0;
-    game->p2 = 0;
+    Game->gridSize = size;;
+    Game->buttons.resize(size);
+    Game->labels.resize(size);;
 
-
-    //create a grid of buttons based on the user input
+    //create the grid of buttons
     for (int i = 0; i < size; ++i) {
 
-        game->buttons[i].resize(size);
-        game->labels[i].resize(size);
+        Game->buttons[i].resize(size);
+        Game->labels[i].resize(size);
 
         for (int j = 0; j < size; ++j) {
             QPushButton *button = new QPushButton();
@@ -57,26 +49,23 @@ void MainWindow::createGrid(int size, SOSgame *game) {
             gridLayout->addWidget(button, i, j);
             connect(button, &QPushButton::clicked, this, &MainWindow::onButtonClicked);
             //stores the button in a vector for easy access later
-            game->buttons[i][j] = button;
+            Game->buttons[i][j] = button;
 
             //create a transparent label over the button, this is used for putting the line through the SOS when it is found
             QLabel *label = new QLabel(this);
             label->setAttribute(Qt::WA_TransparentForMouseEvents);
             label->setStyleSheet("background: transparent;");
             gridLayout->addWidget(label, i, j);
-            game->labels[i][j] = label;
+            Game->labels[i][j] = label;
         }
     }
-    //When grid is created, display that it is now player ones turn.
-    ui->playerTurnLabel->setText("Turn: It is Player One's turn");
-    ui->playerTurnCounterLabel->setText(QString::number(game->turn)); //QString::number() converts and int into a qstring
+
+    //update labels after grid creation
+    updateLabels();
 }
 
 void MainWindow::clearGrid() {
-    //When clearGrid is called, create a new game environment.
-    //First, reset points and turns.
-    simpleGame->turn = 0;
-    generalGame->turn = 0;
+    //this function deletes the current grid of buttons on the game board
 
     QLayoutItem *item;
     while ((item = gridLayout->takeAt(0)) != nullptr) {
@@ -94,12 +83,19 @@ void MainWindow::onSetSizeButtonClicked() { //aka, new game button
     int newSize = ui->sizeLineEdit->text().toInt(&ok);
 
     if (ok && newSize > 2 && newSize < 11) {
+
+        delete Game;
+
         if (ui->simpleGame->isChecked()) {
-            createGrid(newSize, simpleGame);
+            Game = new SOSgame();
+            createGrid(newSize);
+            Game->currentGameMode = true;
             currentGameMode = true;
         }
         else if (ui->generalGame->isChecked()) {
-            createGrid(newSize, generalGame);
+            Game = new SOSgame();
+            createGrid(newSize);
+            Game->currentGameMode = false;
             currentGameMode = false;
         }
     }
@@ -117,29 +113,21 @@ void MainWindow::onButtonClicked() {
     }
 
     //Fill cell function
-    if (currentGameMode == true) {
-        fillCell(simpleGame);
-    }
-    else if (currentGameMode == false) {
-        fillCell(generalGame);
-
-    }
-
-
+    fillCell();
 }
 
-void MainWindow::fillCell(SOSgame *game) {
+void MainWindow::fillCell() {
 
     QPushButton *button = qobject_cast<QPushButton*>(sender());
     QString buttonColor;
 
     //Set color of the letter before-hand to avoid nesting another if statement.
     //Might nest later if i dont like how it looks//
-    if (game->turn % 2 == 0) {
+    if (Game->turn % 2 == 0) {
         //it is player 1's turn
         buttonColor = "color: red;";
     }
-    else if (game->turn % 2 != 0){
+    else if (Game->turn % 2 != 0){
         //its is player 2's turn
         buttonColor = "color: blue;";
     }
@@ -152,33 +140,41 @@ void MainWindow::fillCell(SOSgame *game) {
         if (ui->radioButton->isChecked() == true) {
             button->setText("S");
             button->setStyleSheet(buttonColor);
-            game->occupiedCells++;
+            Game->occupiedCells++;
         }
         //Else if statement executes if second radio button is checked,
         //inserting an O into the space.
         else if (ui->radioButton_2->isChecked() == true) {
             button->setText("O");
             button->setStyleSheet(buttonColor);
-            game->occupiedCells++;
+            Game->occupiedCells++;
         }
 
         //after space is filled, check if the player earns a point
-        game->checkSOS();
+        Game->checkSOS();
 
         //after checkSOS is done, check if game is over
         //this function is where proper code goes to die
-        if (game->checkGameOver(currentGameMode)) {
+        if (Game->checkGameOver(currentGameMode)) {
             clearGrid();
         }
     }
 
-    if (game->turn % 2 == 0) {
+    //update labels
+    updateLabels();
+}
+
+void MainWindow::updateLabels() {
+
+    //set turn label depending on whose turn it is
+    if (Game->turn % 2 == 0) {
         ui->playerTurnLabel->setText("Turn: It is Player One's turn");
     }
-    else if (game->turn % 2 != 0){
+    else if (Game->turn % 2 != 0){
         ui->playerTurnLabel->setText("Turn: It is Player Two's turn");
     }
 
-    ui->playerTurnCounterLabel->setText(QString::number(game->turn)); //QString::number() converts and int into a qstring
-
+    ui->playerTurnCounterLabel->setText(QString::number(Game->turn));
+    ui->p1pointsLabel->setText(QString::number(Game->p1));
+    ui->p2pointsLabel->setText(QString::number(Game->p2));
 }

@@ -30,16 +30,16 @@ private slots:
     void onButtonClicked();
 
 private:
-
-    SOSgame *simpleGame;
-    SOSgame *generalGame;
+    SOSgame *Game;
 
     QGridLayout *gridLayout;
     QVBoxLayout *mainLayout;
     QHBoxLayout *controlLayout;
 
-    void createGrid(int size, SOSgame *game);
-    void fillCell(SOSgame *game);
+    void updateLabels();
+    void createGrid(int size);
+    void fillCell();
     void clearGrid();
 };
+
 #endif // MAINWINDOW_H

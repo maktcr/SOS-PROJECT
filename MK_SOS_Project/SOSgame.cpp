@@ -18,7 +18,6 @@ void SOSgame::checkSOS() {
                     //it is player 1's turn
                     p1 ++;
                     createdSOS ++;
-                    //mainwindow function to change p1pointsLabel TOTOTOTOTDODODODOD///////////////////
                 }
                 else if (turn % 2 != 0){
                     //its is player 2's turn
@@ -46,8 +45,6 @@ bool SOSgame::checkCell(int row, int col) {
         SOSpos pos1 = {row, col, "horizontal"};
         SOSpos pos2 = {row, col + 1, "horizontal"};
         SOSpos pos3 = {row, col + 2, "horizontal"};
-
-
 
         if (foundSOS.find(pos1) == foundSOS.end() &&
             foundSOS.find(pos2) == foundSOS.end() &&
@@ -85,7 +82,7 @@ bool SOSgame::checkCell(int row, int col) {
             foundSOS.find(pos3) == foundSOS.end()) {
 
             sequence = buttons[row][col]->text() + buttons[row + 1][col]->text() + buttons[row + 2][col]->text();
-            ;
+
             if (sequence == "SOS") {
 
                 foundSOS.insert(pos1);
@@ -155,30 +152,36 @@ bool SOSgame::checkCell(int row, int col) {
 }
 
 bool SOSgame::checkGameOver(bool mode) {
+    //in a simple game, the game is over once a single SOS is found, if its not a simple game, continue
+    if (mode == true) {
+        //P1 win condition
+        if (p1 > p2) {
+            QMessageBox::warning(this, "Game Over!","Player One is the winner!");
+            return true;
+        }
+        //P2 win condition
+        else if (p2 > p1) {
+            QMessageBox::warning(this, "Game Over!","Player Two is the winner!");
+            return true;
+        }
+        //game draw condition
+        else if (occupiedCells == gridSize * gridSize) {
+            QMessageBox::warning(this, "Game Over!", "Game has ended in a Draw!");
+            return true;
+        }
+    }
 
-    if (mode == true && ((p1 > 0) | (p2 > 0))) {
-        //in a simple game, the game is over once a single SOS is found, if its not a simple game, continue
-        if (p1 == 1) {
-            QMessageBox::warning(this, "Player One is the winner!","You may continue playing this game to the end, or start a new one");
-        }
-        if (p2 == 1) {
-            QMessageBox::warning(this, "Player Two is the winner!","You may continue playing this game to the end, or start a new one");
-        }
-        return true;
-    }
-    else if (mode == true && (occupiedCells == gridSize * gridSize)) {
-        QMessageBox::warning(this, "DRAW", "Game has ended in a Draw!");
-        return true;
-    }
     //in a general game, the game is over once the whole board is full.
     else if (mode == false && (occupiedCells == gridSize * gridSize)) {
-
+        //P1 win condition
         if (p1 > p2) {
             QMessageBox::warning(this, "Player One is the winner!","Please use the new game button to start a new game.");
         }
+        //P2 win condition
         else if (p2 > p1) {
             QMessageBox::warning(this, "Player Two is the winner!","Please use the new game button to start a new game.");
         }
+        //DRAW condition
         else {
             QMessageBox::warning(this, "Game has ended in a Draw!","Please use the new game button to start a new game.");
         }
@@ -187,6 +190,8 @@ bool SOSgame::checkGameOver(bool mode) {
     else {
         return false;
     }
+
+    return false;
 }
 
 void SOSgame::drawLine(QLabel *label, const QString &direction) {
@@ -211,3 +216,5 @@ void SOSgame::drawLine(QLabel *label, const QString &direction) {
     painter.end();
     label->setPixmap(pixmap);
 }
+
+

@@ -112,7 +112,7 @@
      <string>TextLabel</string>
     </property>
    </widget>
-   <widget class="QLabel" name="label2">
+   <widget class="QLabel" name="p2pointsLabel">
     <property name="geometry">
      <rect>
       <x>440</x>

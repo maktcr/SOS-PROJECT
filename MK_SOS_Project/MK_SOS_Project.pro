@@ -1,5 +1,4 @@
-QT       += core gui
-QT += testlib
+QT       += core gui testlib
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -11,7 +10,7 @@ CONFIG += c++17
 
 SOURCES += \
     SOSgame.cpp \
-    SOStest.cpp \
+    #SOStest.cpp \
     main.cpp \
     mainwindow.cpp
 
@@ -21,6 +20,11 @@ HEADERS += \
 
 FORMS += \
     mainwindow.ui
+
+TEST {
+    SOURCES += SOStest.cpp
+    QT+=testlib
+}
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
