@@ -15,6 +15,7 @@ SOURCES += \
     mainwindow.cpp
 
 HEADERS += \
+    CPU.h \
     SOSgame.h \
     mainwindow.h
 

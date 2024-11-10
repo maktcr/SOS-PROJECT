@@ -39,6 +39,7 @@ private:
     void updateLabels();
     void createGrid(int size);
     void fillCell();
+    void newGame();
     void clearGrid();
 };
 

@@ -42,20 +42,14 @@ bool SOSgame::checkCell(int row, int col) {
     //horizontal
     if (col <= gridSize - 3) {
 
-        SOSpos pos1 = {row, col, "horizontal"};
-        SOSpos pos2 = {row, col + 1, "horizontal"};
-        SOSpos pos3 = {row, col + 2, "horizontal"};
+        SOSpos pos = {row, col, "horizontal"};
 
-        if (foundSOS.find(pos1) == foundSOS.end() &&
-            foundSOS.find(pos2) == foundSOS.end() &&
-            foundSOS.find(pos3) == foundSOS.end()) {
+        if (foundSOS.find(pos) == foundSOS.end()) {
 
             sequence = buttons[row][col]->text() + buttons[row][col + 1]->text() + buttons[row][col + 2]->text();
 
             if (sequence == "SOS") {
-                foundSOS.insert(pos1);
-                foundSOS.insert(pos2);
-                foundSOS.insert(pos3);
+                foundSOS.insert(pos);
 
                 //draw line
                 drawLine(labels[row][col], "horizontal");
@@ -73,21 +67,15 @@ bool SOSgame::checkCell(int row, int col) {
     //check verticle
     if (row <= gridSize - 3) {
 
-        SOSpos pos1 = {row, col, "verticle"};
-        SOSpos pos2 = {row + 1, col, "verticle"};
-        SOSpos pos3 = {row + 2, col, "verticle"};
+        SOSpos pos = {row, col, "vertical"};
 
-        if (foundSOS.find(pos1) == foundSOS.end() &&
-            foundSOS.find(pos2) == foundSOS.end() &&
-            foundSOS.find(pos3) == foundSOS.end()) {
+        if (foundSOS.find(pos) == foundSOS.end()) {
 
             sequence = buttons[row][col]->text() + buttons[row + 1][col]->text() + buttons[row + 2][col]->text();
 
             if (sequence == "SOS") {
 
-                foundSOS.insert(pos1);
-                foundSOS.insert(pos2);
-                foundSOS.insert(pos3);
+                foundSOS.insert(pos);
 
                 drawLine(labels[row][col], "vertical");
                 drawLine(labels[row + 1][col], "vertical");
@@ -102,16 +90,11 @@ bool SOSgame::checkCell(int row, int col) {
     if ((row <= gridSize - 3) && (col >= 2)) {
         sequence = buttons[row][col]->text() + buttons[row + 1][col - 1]->text() + buttons[row + 2][col - 2]->text();
         if (sequence == "SOS") {
-            SOSpos pos1 = {row, col, "diagonal_left"};
-            SOSpos pos2 = {row + 1, col - 1, "diagonal_left"};
-            SOSpos pos3 = {row + 2, col - 2, "diagonal_left"};
-            if (foundSOS.find(pos1) == foundSOS.end() &&
-                foundSOS.find(pos2) == foundSOS.end() &&
-                foundSOS.find(pos3) == foundSOS.end()) {
+            SOSpos pos = {row, col, "diagonal_left"};
 
-                foundSOS.insert(pos1);
-                foundSOS.insert(pos2);
-                foundSOS.insert(pos3);
+            if (foundSOS.find(pos) == foundSOS.end()) {
+
+                foundSOS.insert(pos);
 
                 drawLine(labels[row][col], "diagonal_left");
                 drawLine(labels[row + 1][col - 1], "diagonal_left");
@@ -127,17 +110,11 @@ bool SOSgame::checkCell(int row, int col) {
         sequence = buttons[row][col]->text() + buttons[row + 1][col + 1]->text() + buttons[row + 2][col + 2]->text();
         if (sequence == "SOS") {
 
-            SOSpos pos1 = {row, col, "diagonal_right"};
-            SOSpos pos2 = {row + 1, col + 1, "diagonal_right"};
-            SOSpos pos3 = {row + 2, col + 2, "diagonal_right"};
+            SOSpos pos = {row, col, "diagonal_right"};
 
-            if (foundSOS.find(pos1) == foundSOS.end() &&
-                foundSOS.find(pos2) == foundSOS.end() &&
-                foundSOS.find(pos3) == foundSOS.end()) {
+            if (foundSOS.find(pos) == foundSOS.end()) {
 
-                foundSOS.insert(pos1);
-                foundSOS.insert(pos2);
-                foundSOS.insert(pos3);
+                foundSOS.insert(pos);
 
                 drawLine(labels[row][col], "diagonal_right");
                 drawLine(labels[row + 1][col + 1], "diagonal_right");
@@ -151,9 +128,9 @@ bool SOSgame::checkCell(int row, int col) {
     return false;
 }
 
-bool SOSgame::checkGameOver(bool mode) {
+bool SOSgame::checkGameOver() {
     //in a simple game, the game is over once a single SOS is found, if its not a simple game, continue
-    if (mode == true) {
+    if (currentGameMode == true) {
         //P1 win condition
         if (p1 > p2) {
             QMessageBox::warning(this, "Game Over!","Player One is the winner!");
@@ -171,8 +148,8 @@ bool SOSgame::checkGameOver(bool mode) {
         }
     }
 
-    //in a general game, the game is over once the whole board is full.
-    else if (mode == false && (occupiedCells == gridSize * gridSize)) {
+    // in a general game, the game is over once the whole board is full.
+    else if (currentGameMode == false && (occupiedCells == gridSize * gridSize)) {
         //P1 win condition
         if (p1 > p2) {
             QMessageBox::warning(this, "Player One is the winner!","Please use the new game button to start a new game.");
@@ -195,25 +172,38 @@ bool SOSgame::checkGameOver(bool mode) {
 }
 
 void SOSgame::drawLine(QLabel *label, const QString &direction) {
-    QPixmap pixmap(label->size());
-    pixmap.fill(Qt::transparent);
+
+    QPixmap pixmap;
+    if (labelPixmaps.contains(label)) {
+        pixmap = labelPixmaps[label];  // retrieve the existing pixmap if it exists
+    } else {
+        pixmap = QPixmap(label->size());
+        pixmap.fill(Qt::transparent);  // initialize a new pixmap as transparent only once
+    }
+
+
+    // Use a painter to draw on the pixmap
     QPainter painter(&pixmap);
+    painter.setRenderHint(QPainter::Antialiasing);  // this smooths out the lines
     painter.setPen(QPen(Qt::black, 3));
 
+    // draw the new line based on the specified direction
     if (direction == "horizontal") {
-        painter.drawLine(0, label->height() / 2, label->width(), label->height() / 2);;
+        painter.drawLine(0, label->height() / 2, label->width(), label->height() / 2);
     }
-    else if (direction == "verticle") {
+    else if (direction == "vertical") {
         painter.drawLine(label->width() / 2, 0, label->width() / 2, label->height());
     }
     else if (direction == "diagonal_left") {
         painter.drawLine(label->width(), 0, 0, label->height());
     }
     else if (direction == "diagonal_right") {
-        painter.drawLine(0, 0, label->width(), label->height());;
+        painter.drawLine(0, 0, label->width(), label->height());
     }
 
+    // end the painter and set the updated pixmap back to the label
     painter.end();
+    labelPixmaps[label] = pixmap;
     label->setPixmap(pixmap);
 }
 

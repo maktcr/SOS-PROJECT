@@ -14,29 +14,6 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QLineEdit" name="sizeLineEdit">
-    <property name="geometry">
-     <rect>
-      <x>150</x>
-      <y>30</y>
-      <width>113</width>
-      <height>24</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="setSizeButton">
-    <property name="geometry">
-     <rect>
-      <x>150</x>
-      <y>60</y>
-      <width>80</width>
-      <height>24</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>PushButton</string>
-    </property>
-   </widget>
    <widget class="QWidget" name="centralWidget" native="true">
     <property name="geometry">
      <rect>
@@ -50,7 +27,7 @@
    <widget class="QRadioButton" name="radioButton">
     <property name="geometry">
      <rect>
-      <x>310</x>
+      <x>360</x>
       <y>40</y>
       <width>91</width>
       <height>22</height>
@@ -63,8 +40,8 @@
    <widget class="QRadioButton" name="radioButton_2">
     <property name="geometry">
      <rect>
-      <x>310</x>
-      <y>60</y>
+      <x>360</x>
+      <y>70</y>
       <width>91</width>
       <height>22</height>
      </rect>
@@ -76,8 +53,8 @@
    <widget class="QLabel" name="playerTurnCounterLabel">
     <property name="geometry">
      <rect>
-      <x>50</x>
-      <y>120</y>
+      <x>470</x>
+      <y>420</y>
       <width>71</width>
       <height>16</height>
      </rect>
@@ -89,8 +66,8 @@
    <widget class="QLabel" name="playerTurnLabel">
     <property name="geometry">
      <rect>
-      <x>50</x>
-      <y>140</y>
+      <x>470</x>
+      <y>440</y>
       <width>201</width>
       <height>16</height>
      </rect>
@@ -102,8 +79,8 @@
    <widget class="QLabel" name="p1pointsLabel">
     <property name="geometry">
      <rect>
-      <x>440</x>
-      <y>80</y>
+      <x>470</x>
+      <y>520</y>
       <width>381</width>
       <height>20</height>
      </rect>
@@ -115,8 +92,8 @@
    <widget class="QLabel" name="p2pointsLabel">
     <property name="geometry">
      <rect>
-      <x>440</x>
-      <y>100</y>
+      <x>470</x>
+      <y>500</y>
       <width>281</width>
       <height>16</height>
      </rect>
@@ -128,40 +105,141 @@
    <widget class="QGroupBox" name="groupBox">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>10</y>
-      <width>120</width>
-      <height>80</height>
+      <x>10</x>
+      <y>0</y>
+      <width>291</width>
+      <height>151</height>
      </rect>
     </property>
     <property name="title">
-     <string>Game Mode</string>
+     <string/>
     </property>
-    <widget class="QRadioButton" name="generalGame">
+    <widget class="QLineEdit" name="sizeLineEdit">
      <property name="geometry">
       <rect>
-       <x>0</x>
-       <y>50</y>
-       <width>101</width>
-       <height>22</height>
+       <x>20</x>
+       <y>120</y>
+       <width>113</width>
+       <height>24</height>
       </rect>
-     </property>
-     <property name="text">
-      <string>General Game</string>
      </property>
     </widget>
-    <widget class="QRadioButton" name="simpleGame">
+    <widget class="QLabel" name="label">
      <property name="geometry">
       <rect>
-       <x>0</x>
-       <y>20</y>
-       <width>91</width>
-       <height>22</height>
+       <x>10</x>
+       <y>100</y>
+       <width>71</width>
+       <height>16</height>
       </rect>
      </property>
      <property name="text">
-      <string>Simple Game</string>
+      <string>Board Size:</string>
      </property>
+    </widget>
+    <widget class="QLabel" name="label_3">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>71</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Game Setup</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="setSizeButton">
+     <property name="geometry">
+      <rect>
+       <x>200</x>
+       <y>120</y>
+       <width>80</width>
+       <height>24</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Start Game</string>
+     </property>
+    </widget>
+    <widget class="QGroupBox" name="groupBox_2">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>20</y>
+       <width>120</width>
+       <height>71</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>Game Mode:</string>
+     </property>
+     <widget class="QRadioButton" name="simpleGame">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>20</y>
+        <width>91</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Simple Game</string>
+      </property>
+     </widget>
+     <widget class="QRadioButton" name="generalGame">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>40</y>
+        <width>101</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>General Game</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QGroupBox" name="groupBox_3">
+     <property name="geometry">
+      <rect>
+       <x>140</x>
+       <y>20</y>
+       <width>120</width>
+       <height>71</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>Opponenet Type</string>
+     </property>
+     <widget class="QRadioButton" name="humanOpp">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>20</y>
+        <width>91</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Human</string>
+      </property>
+     </widget>
+     <widget class="QRadioButton" name="compOpp">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>40</y>
+        <width>101</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Computer</string>
+      </property>
+     </widget>
     </widget>
    </widget>
   </widget>

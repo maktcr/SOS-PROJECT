@@ -31,7 +31,7 @@ private:
 
     bool checkCell(int row, int col);
     void checkSOS();
-    bool checkGameOver(bool mode);
+    bool checkGameOver();
     void drawLine(QLabel *label, const QString &direction);
 
     int turn = 0;
@@ -42,6 +42,13 @@ private:
     int occupiedCells;
     bool currentGameMode;
 
+    struct Line {
+        QLabel *label;
+        QString direction;
+    };
+
+    QMap<QLabel*, QPixmap> labelPixmaps;
+    std::vector<Line> drawnLines;
     std::set<SOSpos> foundSOS; //track the sos's found
     QVector<QVector<QPushButton*>> buttons;
     QVector<QVector<QLabel*>> labels;

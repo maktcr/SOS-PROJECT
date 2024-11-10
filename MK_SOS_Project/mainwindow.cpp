@@ -12,14 +12,13 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     //grid layout for resizable game board creation
-    gridLayout = new QGridLayout();
     QWidget *containerWidget = new QWidget();
-    containerWidget->setLayout(gridLayout);
     QVBoxLayout *mainLayout = new QVBoxLayout();
+
+    gridLayout = new QGridLayout();
+    containerWidget->setLayout(gridLayout);
     mainLayout->addWidget(containerWidget);
     ui->centralWidget->setLayout(mainLayout);
-
-    Game = new SOSgame();
 
     connect(ui->setSizeButton, &QPushButton::clicked, this, &MainWindow::onSetSizeButtonClicked);
 }
@@ -79,29 +78,9 @@ void MainWindow::clearGrid() {
 }
 
 void MainWindow::onSetSizeButtonClicked() { //aka, new game button
-    bool ok;
-    int newSize = ui->sizeLineEdit->text().toInt(&ok);
-
-    if (ok && newSize > 2 && newSize < 11) {
-
-        delete Game;
-
-        if (ui->simpleGame->isChecked()) {
-            Game = new SOSgame();
-            createGrid(newSize);
-            Game->currentGameMode = true;
-            currentGameMode = true;
-        }
-        else if (ui->generalGame->isChecked()) {
-            Game = new SOSgame();
-            createGrid(newSize);
-            Game->currentGameMode = false;
-            currentGameMode = false;
-        }
-    }
-    else {
-        QMessageBox::warning(this, "Invalid Input","Enter a value greater than 2 and less than or equal to 10.");
-    }
+    //call the new game function
+    //this may seem not neccesarry, but i didnt want much logic in the button function itself.
+    newGame();
 }
 
 void MainWindow::onButtonClicked() {
@@ -115,6 +94,28 @@ void MainWindow::onButtonClicked() {
     //Fill cell function
     fillCell();
 }
+
+void MainWindow::newGame() {
+    bool ok;
+    int newSize = ui->sizeLineEdit->text().toInt(&ok);
+
+    //make sure all inputs are valid
+    if ((ok && newSize > 2 && newSize < 11) &&
+        (ui->simpleGame->isChecked() || ui->generalGame->isChecked()) &&
+        (ui->humanOpp->isChecked() || ui->compOpp->isChecked())) {
+
+        //all inputs are valid, create a new game
+        Game = new SOSgame();
+        createGrid(newSize);
+        Game->currentGameMode = ui->simpleGame->isChecked();    //this sets currentGameMode to true for simple game, or false for general game.
+        ui->setSizeButton->setText("New Game");
+
+    }
+    else {
+        QMessageBox::warning(this, "Invalid Input","Please select a game mode, opponent type, and a board size greater than 2 and less than 11.");
+    }
+}
+
 
 void MainWindow::fillCell() {
 
@@ -155,7 +156,7 @@ void MainWindow::fillCell() {
 
         //after checkSOS is done, check if game is over
         //this function is where proper code goes to die
-        if (Game->checkGameOver(currentGameMode)) {
+        if (Game->checkGameOver()) {
             clearGrid();
         }
     }
