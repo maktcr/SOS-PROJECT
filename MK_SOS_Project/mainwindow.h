@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include "SOSgame.h"
+#include "CPU.h"
 #include <QPushButton>
 #include <QGridLayout>
 #include <QLineEdit>
@@ -23,6 +24,7 @@ public:
 
     Ui::MainWindow *ui;
 
+    QVector<QVector<QPushButton*>> getGridButtons() const;  //for computer player logic
     bool currentGameMode; //true for simple, false for general
 
 private slots:
@@ -31,12 +33,15 @@ private slots:
 
 private:
     SOSgame *Game;
+    CPU *CPU;
 
     QGridLayout *gridLayout;
     QVBoxLayout *mainLayout;
     QHBoxLayout *controlLayout;
 
     void updateLabels();
+    void delay();
+    void cpuMove();
     void createGrid(int size);
     void fillCell();
     void newGame();

@@ -23,16 +23,24 @@ struct SOSpos {
 class SOSgame : public QMainWindow {
     //Q_OBJECT
     friend class MainWindow;
+    friend class CPU;
     friend class SOStest;
 public:
     //bool currentGameMode;
+    int getGridSize() {
+        return gridSize;
+    }
+
+    QVector<QVector<QPushButton*>> getGridButtons() const;
 
 private:
 
-    bool checkCell(int row, int col);
+    //alot of these arent needed anymore, be sure to clean it up
+    int checkCell(int row, int col);
     void checkSOS();
     bool checkGameOver();
     void drawLine(QLabel *label, const QString &direction);
+
 
     int turn = 0;
 
@@ -46,6 +54,7 @@ private:
         QLabel *label;
         QString direction;
     };
+
 
     QMap<QLabel*, QPixmap> labelPixmaps;
     std::vector<Line> drawnLines;

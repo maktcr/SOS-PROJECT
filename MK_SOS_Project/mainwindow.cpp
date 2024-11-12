@@ -5,6 +5,7 @@
 #include <QString>
 #include <QMessageBox>
 #include <QVBoxLayout>
+#include <iostream>
 
 
 MainWindow::MainWindow(QWidget *parent)
@@ -26,6 +27,8 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete ui;
+    delete Game;
+    delete CPU;
 }
 
 void MainWindow::createGrid(int size) {
@@ -45,8 +48,15 @@ void MainWindow::createGrid(int size) {
         for (int j = 0; j < size; ++j) {
             QPushButton *button = new QPushButton();
             button->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
+            // Set a larger font size for the button text
+            QFont font = button->font();
+            font.setPointSize(16);  // Adjust to the desired font size
+            button->setFont(font);
+
             gridLayout->addWidget(button, i, j);
             connect(button, &QPushButton::clicked, this, &MainWindow::onButtonClicked);
+
             //stores the button in a vector for easy access later
             Game->buttons[i][j] = button;
 
@@ -65,6 +75,7 @@ void MainWindow::createGrid(int size) {
 
 void MainWindow::clearGrid() {
     //this function deletes the current grid of buttons on the game board
+    Game->turn = 0;
 
     QLayoutItem *item;
     while ((item = gridLayout->takeAt(0)) != nullptr) {
@@ -80,7 +91,32 @@ void MainWindow::clearGrid() {
 void MainWindow::onSetSizeButtonClicked() { //aka, new game button
     //call the new game function
     //this may seem not neccesarry, but i didnt want much logic in the button function itself.
-    newGame();
+    if (ui->compOpp->isChecked() && ui->compOpp_2->isChecked()) {
+        newGame();
+        CPU->makeMove();
+        Game->occupiedCells++;
+        Game->checkSOS();
+        updateLabels();
+        std::cout << "turn: " << Game->turn << std::endl;
+        while(!Game->checkGameOver()) {
+            CPU->makeMove();
+            Game->occupiedCells++;
+            Game->checkSOS();
+            updateLabels();
+            std::cout << "turn: " << Game->turn << std::endl;
+        }
+        clearGrid();
+    }
+    else if (ui->compOpp->isChecked() && !ui->compOpp_2->isChecked()) {
+        newGame();
+        CPU->makeMove();
+        Game->occupiedCells++;
+        Game->checkSOS();
+        updateLabels();
+    }
+    else {
+        newGame();
+    }
 }
 
 void MainWindow::onButtonClicked() {
@@ -106,6 +142,7 @@ void MainWindow::newGame() {
 
         //all inputs are valid, create a new game
         Game = new SOSgame();
+        CPU->setGame(Game);
         createGrid(newSize);
         Game->currentGameMode = ui->simpleGame->isChecked();    //this sets currentGameMode to true for simple game, or false for general game.
         ui->setSizeButton->setText("New Game");
@@ -135,35 +172,75 @@ void MainWindow::fillCell() {
 
     //Make sure current grid space is empty before adding new text
     if (button && button->text().isEmpty()) {
-        //Checks radio box and inserts text accordingly.
+        //Checks radio button and inserts text accordingly.
         //First if executes if first radio button is checked,
         //inserting an S into the space.
         if (ui->radioButton->isChecked() == true) {
             button->setText("S");
             button->setStyleSheet(buttonColor);
-            Game->occupiedCells++;
+
         }
         //Else if statement executes if second radio button is checked,
         //inserting an O into the space.
         else if (ui->radioButton_2->isChecked() == true) {
             button->setText("O");
             button->setStyleSheet(buttonColor);
-            Game->occupiedCells++;
-        }
 
+        }
+        Game->occupiedCells++;
         //after space is filled, check if the player earns a point
         Game->checkSOS();
 
         //after checkSOS is done, check if game is over
-        //this function is where proper code goes to die
         if (Game->checkGameOver()) {
             clearGrid();
+            return;
+        }
+        //MOVE THIS TO CPUTURN() FUNCTION
+        if (ui->compOpp_2->isChecked() || ui->compOpp->isChecked()) {
+            cpuMove();
         }
     }
 
     //update labels
     updateLabels();
 }
+
+void MainWindow::cpuMove() {
+    if (ui->compOpp_2->isChecked()) {
+        if (Game->turn % 2 != 0) {
+            while(Game->turn % 2 !=0) {
+                CPU->makeMove();
+                std::cout<<"Make move called" << std::endl;
+                Game->occupiedCells++;
+                Game->checkSOS();
+                if (Game->checkGameOver()) {
+                    clearGrid();
+                    return;
+                }
+            }
+        }
+    }
+    else if (ui->compOpp->isChecked()) {
+        if (Game->turn % 2 == 0) {
+            while(Game->turn % 2 == 0) {
+                CPU->makeMove();
+                std::cout<<"Make move called" << std::endl;
+                Game->occupiedCells++;
+                Game->checkSOS();
+                if (Game->checkGameOver()) {
+                    clearGrid();
+                    return;
+                }
+            }
+        }
+    }
+}
+
+
+
+
+
 
 void MainWindow::updateLabels() {
 
@@ -176,6 +253,8 @@ void MainWindow::updateLabels() {
     }
 
     ui->playerTurnCounterLabel->setText(QString::number(Game->turn));
-    ui->p1pointsLabel->setText(QString::number(Game->p1));
-    ui->p2pointsLabel->setText(QString::number(Game->p2));
+    ui->p1pointsLabel->setText("Player One Points: " + QString::number(Game->p1));
+    ui->p2pointsLabel->setText("Player Two Points: " + QString::number(Game->p2));
 }
+
+

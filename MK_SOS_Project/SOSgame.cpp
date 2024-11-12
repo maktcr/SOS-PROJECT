@@ -1,6 +1,7 @@
 #include "SOSgame.h"
 #include <QMessageBox>
 #include <QPainter>
+#include <iostream>
 
 void SOSgame::checkSOS() {
     //to check for points, we need to check each box against adjacent boxes
@@ -10,19 +11,20 @@ void SOSgame::checkSOS() {
 
     for (int i = 0; i < gridSize; ++i) {
         for (int j = 0; j < gridSize; ++j) {
-            if (checkCell(i,j) == true) {
+            int sosCount = checkCell(i, j);
+            if (sosCount > 0) {
                 //This statement is reached when checkCell is called and
                 //an SOS is found. At this stage, use 'turn' to determine which
                 //player will recieve the point and be able to continue playing
                 if (turn % 2 == 0) {
                     //it is player 1's turn
-                    p1 ++;
-                    createdSOS ++;
+                    p1 += sosCount;
+                    createdSOS += sosCount;
                 }
                 else if (turn % 2 != 0){
                     //its is player 2's turn
-                    p2 ++;
-                    createdSOS ++;
+                    p2 += sosCount;
+                    createdSOS += sosCount;
                 }
             }
         }
@@ -34,9 +36,10 @@ void SOSgame::checkSOS() {
     }
 }
 
-bool SOSgame::checkCell(int row, int col) {
+int SOSgame::checkCell(int row, int col) {
 
     QString sequence;
+    int sosCount = 0;
 
     //check horizontal, vertical, and diagonal
     //horizontal
@@ -55,8 +58,9 @@ bool SOSgame::checkCell(int row, int col) {
                 drawLine(labels[row][col], "horizontal");
                 drawLine(labels[row][col + 1], "horizontal");
                 drawLine(labels[row][col + 2], "horizontal");
+                std::cout<<"SOS found starting at " << row << " " << col << "and ending at " << row << " " << col + 2 << std::endl;
 
-                return true;
+                sosCount++;
             }
 
         }
@@ -80,52 +84,59 @@ bool SOSgame::checkCell(int row, int col) {
                 drawLine(labels[row][col], "vertical");
                 drawLine(labels[row + 1][col], "vertical");
                 drawLine(labels[row + 2][col], "vertical");
+                std::cout<<"SOS found starting at " << row << " " << col << "and ending at " << row + 2 << " " << col << std::endl;
 
-                return true;
+                sosCount++;
             }
         }
     }
 
     //check diagonal down left
     if ((row <= gridSize - 3) && (col >= 2)) {
-        sequence = buttons[row][col]->text() + buttons[row + 1][col - 1]->text() + buttons[row + 2][col - 2]->text();
-        if (sequence == "SOS") {
-            SOSpos pos = {row, col, "diagonal_left"};
 
-            if (foundSOS.find(pos) == foundSOS.end()) {
+        SOSpos pos = {row, col, "diagonal_left"};
+
+        if (foundSOS.find(pos) == foundSOS.end()) {
+
+            sequence = buttons[row][col]->text() + buttons[row + 1][col - 1]->text() + buttons[row + 2][col - 2]->text();
+
+            if (sequence == "SOS") {
 
                 foundSOS.insert(pos);
 
                 drawLine(labels[row][col], "diagonal_left");
                 drawLine(labels[row + 1][col - 1], "diagonal_left");
                 drawLine(labels[row + 2][col - 2], "diagonal_left");
+                std::cout<<"SOS found starting at " << row << " " << col << "and ending at " << row + 2 << " " << col - 2 << std::endl;
 
-                return true;
+                sosCount++;
             }
         }
     }
 
     //check diagonal down right
     if ((row <= gridSize - 3) && (col <= gridSize - 3)) {
-        sequence = buttons[row][col]->text() + buttons[row + 1][col + 1]->text() + buttons[row + 2][col + 2]->text();
-        if (sequence == "SOS") {
 
-            SOSpos pos = {row, col, "diagonal_right"};
+        SOSpos pos = {row, col, "diagonal_right"};
 
-            if (foundSOS.find(pos) == foundSOS.end()) {
+        if (foundSOS.find(pos) == foundSOS.end()) {
+
+            sequence = buttons[row][col]->text() + buttons[row + 1][col + 1]->text() + buttons[row + 2][col + 2]->text();
+
+            if (sequence == "SOS") {
 
                 foundSOS.insert(pos);
 
                 drawLine(labels[row][col], "diagonal_right");
                 drawLine(labels[row + 1][col + 1], "diagonal_right");
                 drawLine(labels[row + 2][col + 2], "diagonal_right");
-
-                return true;
+                std::cout<<"SOS found starting at " << row << " " << col << "and ending at " << row + 2 << " " << col + 2 << std::endl;
+                sosCount++;
             }
         }
     }
 
-    return false;
+    return sosCount;
 }
 
 bool SOSgame::checkGameOver() {
@@ -205,6 +216,10 @@ void SOSgame::drawLine(QLabel *label, const QString &direction) {
     painter.end();
     labelPixmaps[label] = pixmap;
     label->setPixmap(pixmap);
+}
+
+QVector<QVector<QPushButton*>> SOSgame::getGridButtons() const {
+    return buttons;
 }
 
 
