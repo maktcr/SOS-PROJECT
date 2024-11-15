@@ -42,6 +42,7 @@ private:
     void updateLabels();
     void delay();
     void cpuMove();
+    void cpuGame();
     void createGrid(int size);
     void fillCell();
     void newGame();

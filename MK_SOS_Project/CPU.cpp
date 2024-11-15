@@ -5,7 +5,7 @@
 #include <QEventLoop>
 #include <QTimer>
 
-CPU::CPU(SOSgame* game) : game(game) {
+CPU::CPU(SOSgame* Game) : Game(Game) {
     std::srand(static_cast<unsigned>(std::time(0)));
 }
 
@@ -19,21 +19,21 @@ void CPU::makeMove() {
 
     //First, we will try to find an "SO sequence" and create an SOS.
     //this logic is similar to that in checkSOS function
-    for (int row = 0; row < game->gridSize; row++) {
-        for (int col = 0; col < game->gridSize; col++) {
-            if (col <= game->gridSize - 3) {
+    for (int row = 0; row < Game->gridSize; row++) {
+        for (int col = 0; col < Game->gridSize; col++) {
+            if (col <= Game->gridSize - 3) {
 
                 SOSpos pos = {row, col, "horizontal"};
                 //std::cout<< row << ", " << col << std::endl;
 
-                if (game->foundSOS.find(pos) == game->foundSOS.end()) {
+                if (Game->foundSOS.find(pos) == Game->foundSOS.end()) {
 
-                    sequence = game->buttons[row][col]->text() + game->buttons[row][col + 1]->text();
+                    sequence = Game->buttons[row][col]->text() + Game->buttons[row][col + 1]->text();
 
-                    if (sequence == "SO" && game->buttons[row][col + 2]->text().isEmpty()) {
+                    if (sequence == "SO" && Game->buttons[row][col + 2]->text().isEmpty()) {
                         //Complete the SOS.
-                        game->buttons[row][col + 2]->setStyleSheet((game->turn % 2 != 0) ? "color: blue" : "color: red");
-                        game->buttons[row][col + 2]->setText("S");
+                        Game->buttons[row][col + 2]->setStyleSheet((Game->turn % 2 != 0) ? "color: blue" : "color: red");
+                        Game->buttons[row][col + 2]->setText("S");
 
                         std::cout<<"move made at " << row << ", " << col + 2 << std::endl;
                         return;
@@ -42,17 +42,17 @@ void CPU::makeMove() {
             }
 
             //check verticle
-            if (row <= game->gridSize - 3) {
+            if (row <= Game->gridSize - 3) {
 
                 SOSpos pos = {row, col, "vertical"};
 
-                if (game->foundSOS.find(pos) == game->foundSOS.end()) {
+                if (Game->foundSOS.find(pos) == Game->foundSOS.end()) {
 
-                    sequence = game->buttons[row][col]->text() + game->buttons[row + 1][col]->text();
+                    sequence = Game->buttons[row][col]->text() + Game->buttons[row + 1][col]->text();
 
-                    if (sequence == "SO" && game->buttons[row + 2][col]->text().isEmpty()) {
-                        game->buttons[row + 2][col]->setStyleSheet((game->turn % 2 != 0) ? "color: blue" : "color: red");
-                        game->buttons[row + 2][col]->setText("S");
+                    if (sequence == "SO" && Game->buttons[row + 2][col]->text().isEmpty()) {
+                        Game->buttons[row + 2][col]->setStyleSheet((Game->turn % 2 != 0) ? "color: blue" : "color: red");
+                        Game->buttons[row + 2][col]->setText("S");
 
                         std::cout<<"move made at " << row + 2 << ", " << col << std::endl;
                         return;
@@ -61,17 +61,17 @@ void CPU::makeMove() {
             }
 
             //check diagonal down left
-            if ((row <= game->gridSize - 3) && (col >= 2)) {
+            if ((row <= Game->gridSize - 3) && (col >= 2)) {
 
                 SOSpos pos = {row, col, "diagonal_left"};
 
-                if (game->foundSOS.find(pos) == game->foundSOS.end()) {
+                if (Game->foundSOS.find(pos) == Game->foundSOS.end()) {
 
-                    sequence = game->buttons[row][col]->text() + game->buttons[row + 1][col - 1]->text();
+                    sequence = Game->buttons[row][col]->text() + Game->buttons[row + 1][col - 1]->text();
 
-                    if (sequence == "SO" && game->buttons[row + 2][col - 2]->text().isEmpty()) {
-                        game->buttons[row + 2][col - 2]->setStyleSheet((game->turn % 2 != 0) ? "color: blue" : "color: red");
-                        game->buttons[row + 2][col - 2]->setText("S");
+                    if (sequence == "SO" && Game->buttons[row + 2][col - 2]->text().isEmpty()) {
+                        Game->buttons[row + 2][col - 2]->setStyleSheet((Game->turn % 2 != 0) ? "color: blue" : "color: red");
+                        Game->buttons[row + 2][col - 2]->setText("S");
 
                         std::cout<<"move made at "<< row + 2 << ", " << col - 2 << std::endl;
                         return;
@@ -80,17 +80,17 @@ void CPU::makeMove() {
             }
 
             //check diagonal down right
-            if ((row <= game->gridSize - 3) && (col <= game->gridSize - 3)) {
+            if ((row <= Game->gridSize - 3) && (col <= Game->gridSize - 3)) {
 
                 SOSpos pos = {row, col, "diagonal_right"};
 
-                if (game->foundSOS.find(pos) == game->foundSOS.end()) {
+                if (Game->foundSOS.find(pos) == Game->foundSOS.end()) {
 
-                    sequence = game->buttons[row][col]->text() + game->buttons[row + 1][col + 1]->text();
+                    sequence = Game->buttons[row][col]->text() + Game->buttons[row + 1][col + 1]->text();
 
-                    if (sequence == "SO" && game->buttons[row + 2][col + 2]->text().isEmpty()) {
-                        game->buttons[row + 2][col + 2]->setStyleSheet((game->turn % 2 != 0) ? "color: blue" : "color: red");
-                        game->buttons[row + 2][col + 2]->setText("S");
+                    if (sequence == "SO" && Game->buttons[row + 2][col + 2]->text().isEmpty()) {
+                        Game->buttons[row + 2][col + 2]->setStyleSheet((Game->turn % 2 != 0) ? "color: blue" : "color: red");
+                        Game->buttons[row + 2][col + 2]->setText("S");
 
                         std::cout<<"move made at " << row + 2 << ", " << col + 2 << std::endl;
                         return;
@@ -101,22 +101,51 @@ void CPU::makeMove() {
         }
     }
 
-
-
     //this is reached if no "SO" sequence is found.
     //select a random empty cell and place either an S or an O.
     int row, col;
     do {
-        row = std::rand() % game->gridSize;
-        col = std::rand() % game->gridSize;
-    } while (!game->buttons[row][col]->text().isEmpty());
+        row = std::rand() % Game->gridSize;
+        col = std::rand() % Game->gridSize;
+    } while (!Game->buttons[row][col]->text().isEmpty());
 
-    game->buttons[row][col]->setStyleSheet((game->turn % 2 != 0) ? "color: blue" : "color: red");
+    Game->buttons[row][col]->setStyleSheet((Game->turn % 2 != 0) ? "color: blue" : "color: red");
     //randomly place an S or an O
-    game->buttons[row][col]->setText((std::rand() % 2 == 0) ? "S" : "O");
-    std::cout<<"move made at " << row << ", " << col << std::endl;
+    Game->buttons[row][col]->setText((std::rand() % 2 == 0) ? "S" : "O");
+    std::cout<< "move made at " << row << ", " << col << std::endl;
 }
 
+void CPU::cpuMove() {
+    if (Game->playerTwoType) {
+        if (Game->turn % 2 != 0) {
+            while(Game->turn % 2 !=0) {
+                makeMove();
+                std::cout<<"Make move called" << std::endl;
+                Game->occupiedCells++;
+                Game->checkSOS();
+                if (Game->checkGameOver()) {
+                    return;
+                }
+            }
+        }
+    }
+    else if (Game->playerOneType) {
+        if (Game->turn % 2 == 0) {
+            while(Game->turn % 2 == 0) {
+                makeMove();
+                std::cout<<"Make move called" << std::endl;
+                Game->occupiedCells++;
+                Game->checkSOS();
+                if (Game->checkGameOver()) {
+                    return;
+                }
+            }
+        }
+    }
+}
+
+
+
 void CPU::setGame(SOSgame* newGame) {
-    game = newGame;
+    Game = newGame;
 }

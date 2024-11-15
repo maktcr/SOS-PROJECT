@@ -49,6 +49,8 @@ private:
     int gridSize;
     int occupiedCells;
     bool currentGameMode;
+    bool playerOneType;
+    bool playerTwoType;
 
     struct Line {
         QLabel *label;

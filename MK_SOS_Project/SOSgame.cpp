@@ -66,8 +66,6 @@ int SOSgame::checkCell(int row, int col) {
         }
     }
 
-
-
     //check verticle
     if (row <= gridSize - 3) {
 

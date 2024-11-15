@@ -5,7 +5,7 @@
 #include <QString>
 #include <QMessageBox>
 #include <QVBoxLayout>
-#include <iostream>
+//#include <iostream>
 
 
 MainWindow::MainWindow(QWidget *parent)
@@ -91,32 +91,7 @@ void MainWindow::clearGrid() {
 void MainWindow::onSetSizeButtonClicked() { //aka, new game button
     //call the new game function
     //this may seem not neccesarry, but i didnt want much logic in the button function itself.
-    if (ui->compOpp->isChecked() && ui->compOpp_2->isChecked()) {
-        newGame();
-        CPU->makeMove();
-        Game->occupiedCells++;
-        Game->checkSOS();
-        updateLabels();
-        std::cout << "turn: " << Game->turn << std::endl;
-        while(!Game->checkGameOver()) {
-            CPU->makeMove();
-            Game->occupiedCells++;
-            Game->checkSOS();
-            updateLabels();
-            std::cout << "turn: " << Game->turn << std::endl;
-        }
-        clearGrid();
-    }
-    else if (ui->compOpp->isChecked() && !ui->compOpp_2->isChecked()) {
-        newGame();
-        CPU->makeMove();
-        Game->occupiedCells++;
-        Game->checkSOS();
-        updateLabels();
-    }
-    else {
-        newGame();
-    }
+    newGame();
 }
 
 void MainWindow::onButtonClicked() {
@@ -138,21 +113,33 @@ void MainWindow::newGame() {
     //make sure all inputs are valid
     if ((ok && newSize > 2 && newSize < 11) &&
         (ui->simpleGame->isChecked() || ui->generalGame->isChecked()) &&
-        (ui->humanOpp->isChecked() || ui->compOpp->isChecked())) {
+        (ui->humanOpp->isChecked() || ui->compOpp->isChecked()) && (ui->humanOpp_2->isChecked() || ui->compOpp_2->isChecked()) ) {
 
-        //all inputs are valid, create a new game
+        //all inputs are valid, create a new game based on the inputs
         Game = new SOSgame();
         CPU->setGame(Game);
         createGrid(newSize);
         Game->currentGameMode = ui->simpleGame->isChecked();    //this sets currentGameMode to true for simple game, or false for general game.
+        Game->playerOneType = ui->compOpp->isChecked();         //playerOneType set to true if its CPU player
+        Game->playerTwoType = ui->compOpp_2->isChecked();       //playerTwoType set to true if its a CPU player
         ui->setSizeButton->setText("New Game");
+
+        //Set up game where player one is CPU
+        if (Game->playerOneType && !Game->playerTwoType) {
+            CPU->cpuMove();
+            updateLabels();
+        }
+
+        //Set up game where both players are CPU
+        else if (Game->playerOneType && Game->playerTwoType) {
+            cpuGame();
+        }
 
     }
     else {
         QMessageBox::warning(this, "Invalid Input","Please select a game mode, opponent type, and a board size greater than 2 and less than 11.");
     }
 }
-
 
 void MainWindow::fillCell() {
 
@@ -196,9 +183,10 @@ void MainWindow::fillCell() {
             clearGrid();
             return;
         }
-        //MOVE THIS TO CPUTURN() FUNCTION
-        if (ui->compOpp_2->isChecked() || ui->compOpp->isChecked()) {
-            cpuMove();
+
+        //after grid space is filled, call CPU move if a cpu player is active in the current game
+        if (Game->playerOneType || Game->playerTwoType) {
+            CPU->cpuMove();
         }
     }
 
@@ -206,40 +194,15 @@ void MainWindow::fillCell() {
     updateLabels();
 }
 
-void MainWindow::cpuMove() {
-    if (ui->compOpp_2->isChecked()) {
-        if (Game->turn % 2 != 0) {
-            while(Game->turn % 2 !=0) {
-                CPU->makeMove();
-                std::cout<<"Make move called" << std::endl;
-                Game->occupiedCells++;
-                Game->checkSOS();
-                if (Game->checkGameOver()) {
-                    clearGrid();
-                    return;
-                }
-            }
-        }
+void MainWindow::cpuGame() {
+
+    do {
+        CPU->cpuMove();
+        updateLabels();
     }
-    else if (ui->compOpp->isChecked()) {
-        if (Game->turn % 2 == 0) {
-            while(Game->turn % 2 == 0) {
-                CPU->makeMove();
-                std::cout<<"Make move called" << std::endl;
-                Game->occupiedCells++;
-                Game->checkSOS();
-                if (Game->checkGameOver()) {
-                    clearGrid();
-                    return;
-                }
-            }
-        }
-    }
+    while (!Game->checkGameOver());
+    clearGrid();
 }
-
-
-
-
 
 
 void MainWindow::updateLabels() {
@@ -256,5 +219,3 @@ void MainWindow::updateLabels() {
     ui->p1pointsLabel->setText("Player One Points: " + QString::number(Game->p1));
     ui->p2pointsLabel->setText("Player Two Points: " + QString::number(Game->p2));
 }
-
-

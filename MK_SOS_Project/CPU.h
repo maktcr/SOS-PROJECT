@@ -6,12 +6,13 @@
 
 class CPU {
 public:
-    CPU(SOSgame* game);
+    CPU(SOSgame* Game);
     void makeMove();  // Function to determine and execute the computer's move
+    void cpuMove();
     void setGame(SOSgame* newGame);
 
 private:
-    SOSgame* game;
+    SOSgame* Game;
 };
 
 
