@@ -29,6 +29,7 @@ public:
 
 private slots:
     void onSetSizeButtonClicked();
+    void onReplayGameButtonClicked();
     void onButtonClicked();
 
 private:
@@ -47,6 +48,7 @@ private:
     void fillCell();
     void newGame();
     void clearGrid();
+    void playFromRecord();
 };
 
 #endif // MAINWINDOW_H

@@ -39,6 +39,7 @@ private:
     int checkCell(int row, int col);
     void checkSOS();
     bool checkGameOver();
+    void gameOver();
     void drawLine(QLabel *label, const QString &direction);
 
 

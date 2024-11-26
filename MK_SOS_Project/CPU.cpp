@@ -4,6 +4,8 @@
 #include <iostream>
 #include <QEventLoop>
 #include <QTimer>
+#include <fstream>
+
 
 CPU::CPU(SOSgame* Game) : Game(Game) {
     std::srand(static_cast<unsigned>(std::time(0)));
@@ -13,8 +15,11 @@ void CPU::makeMove() {
 
     QString sequence;
 
+    std::ofstream file("gameRecord.txt", std::ios::app);
+
+    //set up a delay for cpu players turn
     QEventLoop loop;
-    QTimer::singleShot(500, &loop, &QEventLoop::quit);  // Set up a 500 ms blocking delay
+    QTimer::singleShot(500, &loop, &QEventLoop::quit);
     loop.exec();
 
     //First, we will try to find an "SO sequence" and create an SOS.
@@ -24,7 +29,7 @@ void CPU::makeMove() {
             if (col <= Game->gridSize - 3) {
 
                 SOSpos pos = {row, col, "horizontal"};
-                //std::cout<< row << ", " << col << std::endl;
+
 
                 if (Game->foundSOS.find(pos) == Game->foundSOS.end()) {
 
@@ -35,7 +40,8 @@ void CPU::makeMove() {
                         Game->buttons[row][col + 2]->setStyleSheet((Game->turn % 2 != 0) ? "color: blue" : "color: red");
                         Game->buttons[row][col + 2]->setText("S");
 
-                        std::cout<<"move made at " << row << ", " << col + 2 << std::endl;
+                        std::string player = (Game->turn % 2 == 0) ? "PlayerOne" : "PlayerTwo";
+                        file << player << "," << Game->buttons[row][col + 2]->text().toStdString() << "," << Game->buttons[row][col + 2]->property("row").toInt() << " " << Game->buttons[row][col + 2]->property("col").toInt() << std::endl;
                         return;
                     }
                 }
@@ -54,7 +60,8 @@ void CPU::makeMove() {
                         Game->buttons[row + 2][col]->setStyleSheet((Game->turn % 2 != 0) ? "color: blue" : "color: red");
                         Game->buttons[row + 2][col]->setText("S");
 
-                        std::cout<<"move made at " << row + 2 << ", " << col << std::endl;
+                        std::string player = (Game->turn % 2 == 0) ? "PlayerOne" : "PlayerTwo";
+                        file << player << "," << Game->buttons[row + 2][col]->text().toStdString() << "," << Game->buttons[row + 2][col]->property("row").toInt() << " " << Game->buttons[row + 2][col]->property("col").toInt() << std::endl;
                         return;
                     }
                 }
@@ -73,7 +80,8 @@ void CPU::makeMove() {
                         Game->buttons[row + 2][col - 2]->setStyleSheet((Game->turn % 2 != 0) ? "color: blue" : "color: red");
                         Game->buttons[row + 2][col - 2]->setText("S");
 
-                        std::cout<<"move made at "<< row + 2 << ", " << col - 2 << std::endl;
+                        std::string player = (Game->turn % 2 == 0) ? "PlayerOne" : "PlayerTwo";
+                        file << player << "," << Game->buttons[row + 2][col - 2]->text().toStdString() << "," << Game->buttons[row + 2][col - 2]->property("row").toInt() << " " << Game->buttons[row + 2][col - 2]->property("col").toInt() << std::endl;
                         return;
                     }
                 }
@@ -92,7 +100,8 @@ void CPU::makeMove() {
                         Game->buttons[row + 2][col + 2]->setStyleSheet((Game->turn % 2 != 0) ? "color: blue" : "color: red");
                         Game->buttons[row + 2][col + 2]->setText("S");
 
-                        std::cout<<"move made at " << row + 2 << ", " << col + 2 << std::endl;
+                        std::string player = (Game->turn % 2 == 0) ? "PlayerOne" : "PlayerTwo";
+                        file << player << "," << Game->buttons[row + 2][col + 2]->text().toStdString() << "," << Game->buttons[row + 2][col + 2]->property("row").toInt() << " " << Game->buttons[row + 2][col + 2]->property("col").toInt() << std::endl;
                         return;
                     }
                 }
@@ -112,15 +121,18 @@ void CPU::makeMove() {
     Game->buttons[row][col]->setStyleSheet((Game->turn % 2 != 0) ? "color: blue" : "color: red");
     //randomly place an S or an O
     Game->buttons[row][col]->setText((std::rand() % 2 == 0) ? "S" : "O");
-    std::cout<< "move made at " << row << ", " << col << std::endl;
+
+    std::string player = (Game->turn % 2 == 0) ? "PlayerOne" : "PlayerTwo";
+    file << player << "," << Game->buttons[row][col]->text().toStdString() << "," << Game->buttons[row][col]->property("row").toInt() << " " << Game->buttons[row][col]->property("col").toInt() << std::endl;
+    file.close();
 }
 
 void CPU::cpuMove() {
-    if (Game->playerTwoType) {
+    //condition for player two is CPU but player one is human
+    if (Game->playerTwoType && !Game->playerOneType) {
         if (Game->turn % 2 != 0) {
             while(Game->turn % 2 !=0) {
                 makeMove();
-                std::cout<<"Make move called" << std::endl;
                 Game->occupiedCells++;
                 Game->checkSOS();
                 if (Game->checkGameOver()) {
@@ -129,11 +141,34 @@ void CPU::cpuMove() {
             }
         }
     }
-    else if (Game->playerOneType) {
+    //condition for player one is CPU but player two is human
+    else if (Game->playerOneType && !Game->playerTwoType) {
         if (Game->turn % 2 == 0) {
             while(Game->turn % 2 == 0) {
                 makeMove();
-                std::cout<<"Make move called" << std::endl;
+                Game->occupiedCells++;
+                Game->checkSOS();
+                if (Game->checkGameOver()) {
+                    return;
+                }
+            }
+        }
+    }
+    //condition for if both players are CPU
+    else if (Game->playerOneType && Game->playerTwoType) {
+        if (Game->turn % 2 != 0) {
+            while(Game->turn % 2 != 0) {
+                makeMove();
+                Game->occupiedCells++;
+                Game->checkSOS();
+                if (Game->checkGameOver()) {
+                    return;
+                }
+            }
+        }
+        else if (Game->turn % 2 == 0) {
+            while(Game->turn % 2 ==0) {
+                makeMove();
                 Game->occupiedCells++;
                 Game->checkSOS();
                 if (Game->checkGameOver()) {
@@ -143,8 +178,6 @@ void CPU::cpuMove() {
         }
     }
 }
-
-
 
 void CPU::setGame(SOSgame* newGame) {
     Game = newGame;

@@ -1,7 +1,6 @@
 #include "SOSgame.h"
 #include <QMessageBox>
 #include <QPainter>
-#include <iostream>
 
 void SOSgame::checkSOS() {
     //to check for points, we need to check each box against adjacent boxes
@@ -46,20 +45,20 @@ int SOSgame::checkCell(int row, int col) {
     if (col <= gridSize - 3) {
 
         SOSpos pos = {row, col, "horizontal"};
-
+        //ensures that SOS's arent counted twice
         if (foundSOS.find(pos) == foundSOS.end()) {
-
+            //create a sequence and check if its an SOS
             sequence = buttons[row][col]->text() + buttons[row][col + 1]->text() + buttons[row][col + 2]->text();
 
             if (sequence == "SOS") {
+                //if SOS is found, insert it into foundSOS set to ensure it isnt counted again
                 foundSOS.insert(pos);
 
-                //draw line
+                //when sos is found, draw a line
                 drawLine(labels[row][col], "horizontal");
                 drawLine(labels[row][col + 1], "horizontal");
                 drawLine(labels[row][col + 2], "horizontal");
-                std::cout<<"SOS found starting at " << row << " " << col << "and ending at " << row << " " << col + 2 << std::endl;
-
+                //incriment sosCount, which is used for determining when the player turn is incrimented
                 sosCount++;
             }
 
@@ -82,8 +81,6 @@ int SOSgame::checkCell(int row, int col) {
                 drawLine(labels[row][col], "vertical");
                 drawLine(labels[row + 1][col], "vertical");
                 drawLine(labels[row + 2][col], "vertical");
-                std::cout<<"SOS found starting at " << row << " " << col << "and ending at " << row + 2 << " " << col << std::endl;
-
                 sosCount++;
             }
         }
@@ -105,8 +102,6 @@ int SOSgame::checkCell(int row, int col) {
                 drawLine(labels[row][col], "diagonal_left");
                 drawLine(labels[row + 1][col - 1], "diagonal_left");
                 drawLine(labels[row + 2][col - 2], "diagonal_left");
-                std::cout<<"SOS found starting at " << row << " " << col << "and ending at " << row + 2 << " " << col - 2 << std::endl;
-
                 sosCount++;
             }
         }
@@ -128,7 +123,6 @@ int SOSgame::checkCell(int row, int col) {
                 drawLine(labels[row][col], "diagonal_right");
                 drawLine(labels[row + 1][col + 1], "diagonal_right");
                 drawLine(labels[row + 2][col + 2], "diagonal_right");
-                std::cout<<"SOS found starting at " << row << " " << col << "and ending at " << row + 2 << " " << col + 2 << std::endl;
                 sosCount++;
             }
         }
@@ -138,46 +132,32 @@ int SOSgame::checkCell(int row, int col) {
 }
 
 bool SOSgame::checkGameOver() {
-    //in a simple game, the game is over once a single SOS is found, if its not a simple game, continue
-    if (currentGameMode == true) {
-        //P1 win condition
-        if (p1 > p2) {
-            QMessageBox::warning(this, "Game Over!","Player One is the winner!");
-            return true;
-        }
-        //P2 win condition
-        else if (p2 > p1) {
-            QMessageBox::warning(this, "Game Over!","Player Two is the winner!");
-            return true;
-        }
-        //game draw condition
-        else if (occupiedCells == gridSize * gridSize) {
-            QMessageBox::warning(this, "Game Over!", "Game has ended in a Draw!");
-            return true;
-        }
+    // in a simple game, the game is over once a single SOS is found or when the board is filled
+    if ((currentGameMode == true && (p1 > 0 || p2 > 0)) || (currentGameMode == true && occupiedCells == gridSize * gridSize)) {
+        return true;
     }
-
     // in a general game, the game is over once the whole board is full.
     else if (currentGameMode == false && (occupiedCells == gridSize * gridSize)) {
-        //P1 win condition
-        if (p1 > p2) {
-            QMessageBox::warning(this, "Player One is the winner!","Please use the new game button to start a new game.");
-        }
-        //P2 win condition
-        else if (p2 > p1) {
-            QMessageBox::warning(this, "Player Two is the winner!","Please use the new game button to start a new game.");
-        }
-        //DRAW condition
-        else {
-            QMessageBox::warning(this, "Game has ended in a Draw!","Please use the new game button to start a new game.");
-        }
         return true;
     }
     else {
         return false;
     }
+}
 
-    return false;
+void SOSgame::gameOver() {
+    //player One win
+    if (p1 > p2) {
+        QMessageBox::warning(this, "Player One is the winner!","Please use the new game button to start a new game.");
+    }
+    //player two win
+    else if (p1 < p2) {
+        QMessageBox::warning(this, "Player Two is the winner!","Please use the new game button to start a new game.");
+    }
+    //draw
+    else {
+        QMessageBox::warning(this, "Game has ended in a Draw!","Please use the new game button to start a new game.");
+    }
 }
 
 void SOSgame::drawLine(QLabel *label, const QString &direction) {
