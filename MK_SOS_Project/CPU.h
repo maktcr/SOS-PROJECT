@@ -10,9 +10,11 @@ public:
     void makeMove();  // Function to determine and execute the computer's move
     void cpuMove();
     void setGame(SOSgame* newGame);
+    void setDifficulty(int diff);
 
 private:
     SOSgame* Game;
+    int difficulty; //cpu difficulty
 };
 
 

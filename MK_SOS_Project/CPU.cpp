@@ -11,6 +11,11 @@ CPU::CPU(SOSgame* Game) : Game(Game) {
     std::srand(static_cast<unsigned>(std::time(0)));
 }
 
+void CPU::setDifficulty(int diff){
+    //set difficulty of current CPU to passed value, diff
+    difficulty = diff;
+}
+
 void CPU::makeMove() {
 
     QString sequence;
@@ -24,12 +29,15 @@ void CPU::makeMove() {
 
     //First, we will try to find an "SO sequence" and create an SOS.
     //this logic is similar to that in checkSOS function
+    //some cpu player functionality is only used in the hard difficulty.
     for (int row = 0; row < Game->gridSize; row++) {
         for (int col = 0; col < Game->gridSize; col++) {
+
+            //check horizontal
+
             if (col <= Game->gridSize - 3) {
 
                 SOSpos pos = {row, col, "horizontal"};
-
 
                 if (Game->foundSOS.find(pos) == Game->foundSOS.end()) {
 
@@ -46,6 +54,7 @@ void CPU::makeMove() {
                     }
                 }
             }
+
 
             //check verticle
             if (row <= Game->gridSize - 3) {
@@ -67,6 +76,7 @@ void CPU::makeMove() {
                 }
             }
 
+
             //check diagonal down left
             if ((row <= Game->gridSize - 3) && (col >= 2)) {
 
@@ -86,6 +96,7 @@ void CPU::makeMove() {
                     }
                 }
             }
+
 
             //check diagonal down right
             if ((row <= Game->gridSize - 3) && (col <= Game->gridSize - 3)) {
@@ -107,6 +118,91 @@ void CPU::makeMove() {
                 }
             }
 
+
+            //
+            //HARDMODE / VERY HARDMODE FUNTIONS ONLY
+            //
+            //check verticle backwards, only in hard mode
+            if (difficulty > 0 && (row > 1 && row <= Game->gridSize - 2)) {
+
+                SOSpos pos = {row, col, "vertical"};
+
+                if (Game->foundSOS.find(pos) == Game->foundSOS.end()) {
+
+                    sequence = Game->buttons[row][col]->text() + Game->buttons[row + 1][col]->text();
+
+                    if (sequence == "OS" && Game->buttons[row - 1][col]->text().isEmpty()) {
+                        Game->buttons[row - 1][col]->setStyleSheet((Game->turn % 2 != 0) ? "color: blue" : "color: red");
+                        Game->buttons[row - 1][col]->setText("S");
+
+                        std::string player = (Game->turn % 2 == 0) ? "PlayerOne" : "PlayerTwo";
+                        file << player << "," << Game->buttons[row - 1][col]->text().toStdString() << "," << Game->buttons[row - 1][col]->property("row").toInt() << " " << Game->buttons[row - 1][col]->property("col").toInt() << std::endl;
+                        return;
+                    }
+                }
+            }
+
+            //check horizontal backwards (only in hard difficulty)
+            if (difficulty > 0 && (col > 1 && col <= Game->gridSize - 2)) {
+
+                SOSpos pos = {row, col, "horizontal"};
+
+                if (Game->foundSOS.find(pos) == Game->foundSOS.end()) {
+
+                    sequence = Game->buttons[row][col]->text() + Game->buttons[row][col + 1]->text();
+
+                    if (sequence == "OS" && Game->buttons[row][col - 1]->text().isEmpty()) {
+                        //Complete the SOS.
+                        Game->buttons[row][col - 1]->setStyleSheet((Game->turn % 2 != 0) ? "color: blue" : "color: red");
+                        Game->buttons[row][col - 1]->setText("S");
+
+                        std::string player = (Game->turn % 2 == 0) ? "PlayerOne" : "PlayerTwo";
+                        file << player << "," << Game->buttons[row][col - 1]->text().toStdString() << "," << Game->buttons[row][col - 1]->property("row").toInt() << " " << Game->buttons[row][col -1]->property("col").toInt() << std::endl;
+                        return;
+                    }
+                }
+            }
+
+
+            //find S_S horizontally, only in very hard mode
+            if (difficulty > 1 && (col <= Game->gridSize - 3)) {
+
+                SOSpos pos = {row, col, "horizontal"};
+
+                if (Game->foundSOS.find(pos) == Game->foundSOS.end()) {
+
+                    sequence = Game->buttons[row][col]->text() + Game->buttons[row][col + 2]->text();
+
+                    if (sequence == "SS" && Game->buttons[row][col + 1]->text().isEmpty()) {
+                        //Complete the SOS.
+                        Game->buttons[row][col + 1]->setStyleSheet((Game->turn % 2 != 0) ? "color: blue" : "color: red");
+                        Game->buttons[row][col + 1]->setText("O");
+
+                        std::string player = (Game->turn % 2 == 0) ? "PlayerOne" : "PlayerTwo";
+                        file << player << "," << Game->buttons[row][col + 1]->text().toStdString() << "," << Game->buttons[row][col + 1]->property("row").toInt() << " " << Game->buttons[row][col + 1]->property("col").toInt() << std::endl;
+                        return;
+                    }
+                }
+            }
+            //find S_S vertically, only in very hard mode
+            if (difficulty > 1 && (row <= Game->gridSize - 3)) {
+
+                SOSpos pos = {row, col, "vertical"};
+
+                if (Game->foundSOS.find(pos) == Game->foundSOS.end()) {
+
+                    sequence = Game->buttons[row][col]->text() + Game->buttons[row + 2][col]->text();
+
+                    if (sequence == "SS" && Game->buttons[row + 1][col]->text().isEmpty()) {
+                        Game->buttons[row + 1][col]->setStyleSheet((Game->turn % 2 != 0) ? "color: blue" : "color: red");
+                        Game->buttons[row + 1][col]->setText("O");
+
+                        std::string player = (Game->turn % 2 == 0) ? "PlayerOne" : "PlayerTwo";
+                        file << player << "," << Game->buttons[row + 1][col]->text().toStdString() << "," << Game->buttons[row + 1][col]->property("row").toInt() << " " << Game->buttons[row + 1][col]->property("col").toInt() << std::endl;
+                        return;
+                    }
+                }
+            }
         }
     }
 

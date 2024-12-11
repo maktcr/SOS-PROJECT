@@ -36,6 +36,9 @@
     <property name="text">
      <string>S</string>
     </property>
+    <property name="checked">
+     <bool>true</bool>
+    </property>
    </widget>
    <widget class="QRadioButton" name="radioButton_2">
     <property name="geometry">
@@ -126,6 +129,9 @@
      <property name="text">
       <string>Simple Game</string>
      </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
     </widget>
     <widget class="QRadioButton" name="generalGame">
      <property name="geometry">
@@ -165,6 +171,9 @@
      <property name="text">
       <string>Human</string>
      </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
     </widget>
     <widget class="QRadioButton" name="compOpp">
      <property name="geometry">
@@ -201,6 +210,9 @@
       <width>113</width>
       <height>24</height>
      </rect>
+    </property>
+    <property name="text">
+     <string>3</string>
     </property>
    </widget>
    <widget class="QPushButton" name="setSizeButton">
@@ -240,6 +252,9 @@
      <property name="text">
       <string>Human</string>
      </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
     </widget>
     <widget class="QRadioButton" name="compOpp_2">
      <property name="geometry">
@@ -267,6 +282,61 @@
     <property name="text">
      <string>Press To Replay Last Game</string>
     </property>
+   </widget>
+   <widget class="QGroupBox" name="groupBox">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>310</y>
+      <width>120</width>
+      <height>111</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>CPU Difficulty</string>
+    </property>
+    <widget class="QRadioButton" name="easyDiff">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>30</y>
+       <width>91</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Easy</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="hardDiff">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>50</y>
+       <width>91</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Hard</string>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="veryHardDiff">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>70</y>
+       <width>91</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Very Hard</string>
+     </property>
+    </widget>
    </widget>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>

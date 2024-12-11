@@ -128,6 +128,8 @@ void MainWindow::newGame() {
         Game = new SOSgame();
         //this conencts the CPU class with the new instance of game that was just created
         CPU->setGame(Game);
+        //this sets cpu->diff to 0 if easy, 1 if hard, and 2 if very hard
+        CPU->setDifficulty(ui->easyDiff->isChecked() ? 0 : (ui->hardDiff->isChecked() ? 1 : 2));
 
         std::ofstream file("gameRecord.txt");   //create file for game record, this will override the previous file, keeping only the last game on record
         if (file.is_open()) {
